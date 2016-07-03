@@ -12,6 +12,7 @@
 		472DCFD21D271D31000D8E7A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 472DCFD01D271D31000D8E7A /* LaunchScreen.storyboard */; };
 		47A7091E1D28975A002BDBB8 /* MapView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47A7091D1D28975A002BDBB8 /* MapView.storyboard */; };
 		47A709201D289863002BDBB8 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7091F1D289863002BDBB8 /* MapViewController.swift */; };
+		47A709221D28B7B0002BDBB8 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A709211D28B7B0002BDBB8 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		472DCFD31D271D31000D8E7A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		47A7091D1D28975A002BDBB8 /* MapView.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MapView.storyboard; sourceTree = "<group>"; };
 		47A7091F1D289863002BDBB8 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		47A709211D28B7B0002BDBB8 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +31,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47A709221D28B7B0002BDBB8 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +41,7 @@
 		472DCFBB1D271D31000D8E7A = {
 			isa = PBXGroup;
 			children = (
+				47A709211D28B7B0002BDBB8 /* MapKit.framework */,
 				472DCFC61D271D31000D8E7A /* VirtualTourist */,
 				472DCFC51D271D31000D8E7A /* Products */,
 			);
@@ -54,9 +58,9 @@
 		472DCFC61D271D31000D8E7A /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
-				472DCFD91D271D39000D8E7A /* Support */,
 				47A7091D1D28975A002BDBB8 /* MapView.storyboard */,
 				47A7091F1D289863002BDBB8 /* MapViewController.swift */,
+				472DCFD91D271D39000D8E7A /* Support */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -104,6 +108,7 @@
 				TargetAttributes = {
 					472DCFC31D271D31000D8E7A = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = L5YJU4WM22;
 					};
 				};
 			};
@@ -249,6 +254,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = VirtualTourist/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.touchTapApp.onTheMap.VirtualTourist;
@@ -260,6 +266,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = VirtualTourist/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.touchTapApp.onTheMap.VirtualTourist;
