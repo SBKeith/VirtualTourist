@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="54x-dR-kHi">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <scenes>
+        <!--Virtual Tourist-->
+        <scene sceneID="Ojs-0S-ZPS">
+            <objects>
+                <viewController id="ZIz-M6-xnG" customClass="MapViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Fh0-r2-UsY"/>
+                        <viewControllerLayoutGuide type="bottom" id="bSy-ef-cFI"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="SdU-1F-NjG">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="LXo-C8-bTV">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="LXo-C8-bTV" secondAttribute="trailing" id="MP8-Jn-fAK"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="OHL-Nz-Ud6"/>
+                            <constraint firstItem="LXo-C8-bTV" firstAttribute="leading" secondItem="SdU-1F-NjG" secondAttribute="leading" id="T5U-2W-8lA"/>
+                            <constraint firstItem="LXo-C8-bTV" firstAttribute="top" secondItem="Fh0-r2-UsY" secondAttribute="bottom" id="Z6Z-ct-LsO"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="sbw-K5-TF5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="hh4-au-EQo"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="LXo-C8-bTV" id="qxZ-Ar-8Ty"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FtA-3g-rcg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1162" y="299"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="kac-bv-ySV">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="54x-dR-kHi" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JKj-8f-ONt">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="ZIz-M6-xnG" kind="relationship" relationship="rootViewController" id="w59-ky-OWf"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tB7-kN-wEa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="406" y="299"/>
+        </scene>
+    </scenes>
+</document>

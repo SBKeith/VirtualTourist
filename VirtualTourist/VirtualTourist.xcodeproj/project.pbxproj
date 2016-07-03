@@ -10,6 +10,8 @@
 		472DCFC81D271D31000D8E7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472DCFC71D271D31000D8E7A /* AppDelegate.swift */; };
 		472DCFCF1D271D31000D8E7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472DCFCE1D271D31000D8E7A /* Assets.xcassets */; };
 		472DCFD21D271D31000D8E7A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 472DCFD01D271D31000D8E7A /* LaunchScreen.storyboard */; };
+		47A7091E1D28975A002BDBB8 /* MapView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47A7091D1D28975A002BDBB8 /* MapView.storyboard */; };
+		47A709201D289863002BDBB8 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7091F1D289863002BDBB8 /* MapViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +20,8 @@
 		472DCFCE1D271D31000D8E7A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		472DCFD11D271D31000D8E7A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		472DCFD31D271D31000D8E7A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		47A7091D1D28975A002BDBB8 /* MapView.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MapView.storyboard; sourceTree = "<group>"; };
+		47A7091F1D289863002BDBB8 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +55,8 @@
 			isa = PBXGroup;
 			children = (
 				472DCFD91D271D39000D8E7A /* Support */,
+				47A7091D1D28975A002BDBB8 /* MapView.storyboard */,
+				47A7091F1D289863002BDBB8 /* MapViewController.swift */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -126,6 +132,7 @@
 			files = (
 				472DCFD21D271D31000D8E7A /* LaunchScreen.storyboard in Resources */,
 				472DCFCF1D271D31000D8E7A /* Assets.xcassets in Resources */,
+				47A7091E1D28975A002BDBB8 /* MapView.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				472DCFC81D271D31000D8E7A /* AppDelegate.swift in Sources */,
+				47A709201D289863002BDBB8 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +286,7 @@
 				472DCFD81D271D31000D8E7A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
