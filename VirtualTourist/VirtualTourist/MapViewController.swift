@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 
 class MapViewController: UIViewController {
+    
 
     @IBOutlet weak var mapView: MKMapView!
     
@@ -23,8 +24,27 @@ class MapViewController: UIViewController {
     
     func addAnnotation(sender: UILongPressGestureRecognizer) {
         
+        let tapPoint: CGPoint = sender.locationInView(mapView)
+        let mapCoordinate: CLLocationCoordinate2D = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
+        
         if sender.state == .Began {
-            print("Got here")
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = mapCoordinate
+            
+            // add annotation to core data
+                // Store Lat / Long in core data
+            
+            mapView.addAnnotation(annotation)
+            
         }
     }
 }
+
+
+
+
+
+
+//            // Delete any existing annotations.
+//            if mapView.annotations.count != 0 {
+//                mapView.removeAnnotations(mapView.annotations)

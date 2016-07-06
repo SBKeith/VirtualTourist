@@ -13,6 +13,7 @@
 		47A7091E1D28975A002BDBB8 /* MapView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47A7091D1D28975A002BDBB8 /* MapView.storyboard */; };
 		47A709201D289863002BDBB8 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7091F1D289863002BDBB8 /* MapViewController.swift */; };
 		47A709221D28B7B0002BDBB8 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A709211D28B7B0002BDBB8 /* MapKit.framework */; };
+		47BC68DB1D2DB9DA00410D7C /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 47BC68D91D2DB9DA00410D7C /* Model.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		47A7091D1D28975A002BDBB8 /* MapView.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MapView.storyboard; sourceTree = "<group>"; };
 		47A7091F1D289863002BDBB8 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		47A709211D28B7B0002BDBB8 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		47BC68DA1D2DB9DA00410D7C /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 				47BC68D61D2D8ADA00410D7C /* View */,
 				47A7091D1D28975A002BDBB8 /* MapView.storyboard */,
 				472DCFD91D271D39000D8E7A /* Support */,
+				47BC68D91D2DB9DA00410D7C /* Model.xcdatamodeld */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -174,6 +177,7 @@
 			files = (
 				472DCFC81D271D31000D8E7A /* AppDelegate.swift in Sources */,
 				47A709201D289863002BDBB8 /* MapViewController.swift in Sources */,
+				47BC68DB1D2DB9DA00410D7C /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +324,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		47BC68D91D2DB9DA00410D7C /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				47BC68DA1D2DB9DA00410D7C /* Model.xcdatamodel */,
+			);
+			currentVersion = 47BC68DA1D2DB9DA00410D7C /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 472DCFBC1D271D31000D8E7A /* Project object */;
 }
