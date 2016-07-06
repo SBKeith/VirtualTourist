@@ -15,7 +15,16 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation(_:)))
+        longTouch.minimumPressDuration = 2.0
+        mapView.addGestureRecognizer(longTouch)
     }
-
+    
+    func addAnnotation(sender: UILongPressGestureRecognizer) {
+        
+        if sender.state == .Began {
+            print("Got here")
+        }
+    }
 }

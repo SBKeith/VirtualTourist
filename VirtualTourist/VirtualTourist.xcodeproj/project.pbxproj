@@ -41,7 +41,6 @@
 		472DCFBB1D271D31000D8E7A = {
 			isa = PBXGroup;
 			children = (
-				47A709211D28B7B0002BDBB8 /* MapKit.framework */,
 				472DCFC61D271D31000D8E7A /* VirtualTourist */,
 				472DCFC51D271D31000D8E7A /* Products */,
 			);
@@ -58,8 +57,10 @@
 		472DCFC61D271D31000D8E7A /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				47BC68D81D2D8AEC00410D7C /* Controller */,
+				47BC68D71D2D8AE300410D7C /* Model */,
+				47BC68D61D2D8ADA00410D7C /* View */,
 				47A7091D1D28975A002BDBB8 /* MapView.storyboard */,
-				47A7091F1D289863002BDBB8 /* MapViewController.swift */,
 				472DCFD91D271D39000D8E7A /* Support */,
 			);
 			path = VirtualTourist;
@@ -72,8 +73,31 @@
 				472DCFCE1D271D31000D8E7A /* Assets.xcassets */,
 				472DCFD01D271D31000D8E7A /* LaunchScreen.storyboard */,
 				472DCFD31D271D31000D8E7A /* Info.plist */,
+				47A709211D28B7B0002BDBB8 /* MapKit.framework */,
 			);
 			name = Support;
+			sourceTree = "<group>";
+		};
+		47BC68D61D2D8ADA00410D7C /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		47BC68D71D2D8AE300410D7C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		47BC68D81D2D8AEC00410D7C /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				47A7091F1D289863002BDBB8 /* MapViewController.swift */,
+			);
+			name = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
