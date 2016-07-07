@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15F34" minimumToolsVersion="Xcode 7.0">
-    <entity name="Photos" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="Binary" syncable="YES"/>
+    <entity name="Photo" representedClassName=".Photo" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
         <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin" syncable="YES"/>
     </entity>
-    <entity name="Pin" syncable="YES">
-        <attribute name="location" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="photos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photos" inverseName="pin" inverseEntity="Photos" syncable="YES"/>
+    <entity name="Pin" representedClassName=".Pin" syncable="YES">
+        <attribute name="lat" attributeType="Float" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <attribute name="long" attributeType="Float" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Pin" positionX="-63" positionY="-18" width="128" height="75"/>
-        <element name="Photos" positionX="-54" positionY="-9" width="128" height="75"/>
+        <element name="Photo" positionX="232" positionY="-18" width="128" height="73"/>
+        <element name="Pin" positionX="-27" positionY="-27" width="128" height="88"/>
     </elements>
 </model>
