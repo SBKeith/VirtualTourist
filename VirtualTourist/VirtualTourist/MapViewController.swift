@@ -52,13 +52,18 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                               managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
     
+        addSavedAnnotations()
+        
         let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addNewAnnotation(_:)))
         longTouch.minimumPressDuration = 1.0
         mapView.addGestureRecognizer(longTouch)
     }
     
-    func addSavedAnnotations(fr: NSFetchRequest) {
-        print(fr)
+    func addSavedAnnotations() {
+        
+        let pin = fetchedResultsController?.fetchedObjects
+        
+        print(pin!)
     }
     
     func addNewAnnotation(sender: UILongPressGestureRecognizer) {
