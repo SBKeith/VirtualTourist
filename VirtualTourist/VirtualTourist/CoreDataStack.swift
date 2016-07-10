@@ -34,8 +34,7 @@ struct CoreDataStack {
         }
         self.model = model
         
-        
-        
+    
         // Create the store coordinator
         coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
         

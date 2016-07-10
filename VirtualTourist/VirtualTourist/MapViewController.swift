@@ -1,18 +1,17 @@
 //
-//  MapViewController.swift
-//  VirtualTourist
+//  NotebooksViewController.swift
+//  CoolNotes
 //
-//  Created by Keith Kowalski on 7/2/16.
-//  Copyright © 2016 TouchTapApp. All rights reserved.
+//  Created by Fernando Rodríguez Romero on 10/03/16.
+//  Copyright © 2016 udacity.com. All rights reserved.
 //
 
 import UIKit
-import MapKit
 import CoreData
+import MapKit
 
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
-
     @IBOutlet weak var mapView: MKMapView!
     
     // MARK:  - Properties
@@ -25,10 +24,9 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         }
     }
     
-    init(fetchedResultsController fc : NSFetchedResultsController,
-                                  style : MKMapView){
+    init(fetchedResultsController fc : NSFetchedResultsController) {
         fetchedResultsController = fc
-        super.init(style: style)
+        super.init(nibName: nil, bundle: nil)
     }
     
     // Do not worry about this initializer. I has to be implemented
@@ -38,29 +36,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         super.init(coder: aDecoder)
     }
     
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        
-//        // Set the title
-//        title = "CoolNotes"
-//        
-//        // Get the stack
-//        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-//        let stack = delegate.stack
-//        
-//        // Create a fetchrequest
-//        let fr = NSFetchRequest(entityName: "Notebook")
-//        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-//                              NSSortDescriptor(key: "creationDate", ascending: false)]
-//        
-//        // Create the FetchedResultsController
-//        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
-//                                                              managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-//        
-//        
-//        
-//    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -68,28 +43,25 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let stack = delegate.stack
         
-        // Create a fetchRequest
+        // Create a fetchrequest
         let fr = NSFetchRequest(entityName: "Pin")
+        fr.sortDescriptors = [NSSortDescriptor(key: "lat", ascending: true),
+                              NSSortDescriptor(key: "long", ascending: false)]
         
         // Create the FetchedResultsController
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation(_:)))
-        longTouch.minimumPressDuration = 2.0
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
+                                                              managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+    
+        let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addNewAnnotation(_:)))
+        longTouch.minimumPressDuration = 1.0
         mapView.addGestureRecognizer(longTouch)
     }
     
-    func executeSearch(){
-        if let fc = fetchedResultsController{
-            do{
-                try fc.performFetch()
-            }catch let e as NSError{
-                print("Error while trying to perform a search: \n\(e)\n\(fetchedResultsController)")
-            }
-        }
+    func addSavedAnnotations(fr: NSFetchRequest) {
+        print(fr)
     }
     
-    func addAnnotation(sender: UILongPressGestureRecognizer) {
+    func addNewAnnotation(sender: UILongPressGestureRecognizer) {
         
         let tapPoint: CGPoint = sender.locationInView(mapView)
         let mapCoordinate: CLLocationCoordinate2D = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
@@ -99,10 +71,24 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             annotation.coordinate = mapCoordinate
             
             // add annotation to core data
-                // Store Lat / Long in core data
+            // Store Lat / Long in core data
             
             mapView.addAnnotation(annotation)
             
+        }
+    }
+}
+
+// MARK:  - Fetches
+extension MapViewController {
+    
+    func executeSearch(){
+        if let fc = fetchedResultsController{
+            do{
+                try fc.performFetch()
+            }catch let e as NSError{
+                print("Error while trying to perform a search: \n\(e)\n\(fetchedResultsController)")
+            }
         }
     }
 }

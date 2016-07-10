@@ -8,18 +8,23 @@
 
 import Foundation
 import CoreData
+import MapKit
 
 
 class Pin: NSManagedObject {
 
 
-    convenience init(lat: Float = 44.0, long: Float = -88.5, context: NSManagedObjectContext) {
+    convenience init(lat: Float, long: Float, context: NSManagedObjectContext) {
         if let ent = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
-//            self.latitude = lat
-//            self.longitude = long
+            self.lat = lat
+            self.long = long
         } else {
             fatalError("Unable to find Entity name!")
         }
+    }
+    
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: lat as! Double, longitude: long as! Double)
     }
 }
