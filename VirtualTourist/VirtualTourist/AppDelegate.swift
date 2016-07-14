@@ -26,14 +26,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         // Create Pin Drop (testing)
-        let pin = Pin(lat: 44.5192, long: -88.0198, context: stack.context)
+        _ = Pin(lat: 44.5192, long: -88.0198, context: stack.context)
+        _ = Pin(lat: 32.2217, long: -110.9265, context: stack.context)
         
         // Check out the "data" field when you print an NSManagedObject subclass.
         // It looks like a Dictionary and the values in it are called
         // _Modelled Properties_. These are the properties defined in the
         // Data Model. They reside in the SQLite DB
-
-        print(pin)
     }
 
     

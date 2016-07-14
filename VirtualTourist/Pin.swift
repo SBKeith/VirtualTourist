@@ -12,8 +12,6 @@ import MapKit
 
 
 class Pin: NSManagedObject {
-
-
     convenience init(lat: Float, long: Float, context: NSManagedObjectContext) {
         if let ent = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
@@ -24,7 +22,7 @@ class Pin: NSManagedObject {
         }
     }
     
-    var coordinate: CLLocationCoordinate2D {
+    var coordinates: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: lat as! Double, longitude: long as! Double)
     }
 }

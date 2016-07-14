@@ -15,12 +15,11 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     var managedObjectContext: NSManagedObjectContext!
     var pin = [Pin]()
+    var annotations = [MKAnnotation]()
     
     // MARK:  - Properties
     var fetchedResultsController : NSFetchedResultsController?{
         didSet{
-            // Whenever the frc changes, we execute the search and
-            // reload the table
             fetchedResultsController?.delegate = self
             executeSearch()
         }
@@ -31,9 +30,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         super.init(nibName: nil, bundle: nil)
     }
     
-    // Do not worry about this initializer. I has to be implemented
-    // because of the way Swift interfaces with an Objective C
-    // protocol called NSArchiving. It's not relevant.
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -53,21 +49,31 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
                 pin = results
             }
         } catch {
-            fatalError("There was an error fetching the list lof people")
+            fatalError("There was an error fetching the list of pins.")
         }
     
-        addSavedAnnotations()
+        // Map all persistant data
+        mapSavedAnnotations()
         
+        // Add gesture recognizer
         let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addNewAnnotation(_:)))
         longTouch.minimumPressDuration = 1.0
         mapView.addGestureRecognizer(longTouch)
     }
     
-    func addSavedAnnotations() {
+    
+    // MARK: Helper Functions
+    func mapSavedAnnotations() {
         
-//       print(pin[0].lat, pin[0].long)
-        
-        print(pin.enumerate())
+        for dropPin in 0 ... (pin.count - 1) {
+            let annotation = MKPointAnnotation()
+            let pointLocation: CLLocationCoordinate2D
+            
+            pointLocation = pin[dropPin].coordinates
+            annotation.coordinate = pointLocation
+            
+            mapView.addAnnotation(annotation)
+        }
     }
     
     func addNewAnnotation(sender: UILongPressGestureRecognizer) {
@@ -83,7 +89,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             // Store Lat / Long in core data
             
             mapView.addAnnotation(annotation)
-            
         }
     }
 }
