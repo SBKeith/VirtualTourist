@@ -13,6 +13,8 @@ import MapKit
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
+    var managedObjectContext: NSManagedObjectContext!
+    var pin = [Pin]()
     
     // MARK:  - Properties
     var fetchedResultsController : NSFetchedResultsController?{
@@ -44,13 +46,15 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         let stack = delegate.stack
         
         // Create a fetchrequest
-        let fr = NSFetchRequest(entityName: "Pin")
-        fr.sortDescriptors = [NSSortDescriptor(key: "lat", ascending: true),
-                              NSSortDescriptor(key: "long", ascending: false)]
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
         
-        // Create the FetchedResultsController
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
-                                                              managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        do {
+            if let results = try stack.context.executeFetchRequest(fetchRequest) as? [Pin] {
+                pin = results
+            }
+        } catch {
+            fatalError("There was an error fetching the list lof people")
+        }
     
         addSavedAnnotations()
         
@@ -61,9 +65,9 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     func addSavedAnnotations() {
         
-        let pin = fetchedResultsController?.fetchedObjects
+//       print(pin[0].lat, pin[0].long)
         
-        print(pin!)
+        print(pin.enumerate())
     }
     
     func addNewAnnotation(sender: UILongPressGestureRecognizer) {
@@ -97,11 +101,6 @@ extension MapViewController {
         }
     }
 }
-
-
-
-
-
 
 //            // Delete any existing annotations.
 //            if mapView.annotations.count != 0 {
