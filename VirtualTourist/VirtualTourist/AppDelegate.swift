@@ -16,15 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let stack = CoreDataStack(modelName: "Model")!
     
     func preloadData(){
-        
-        // Remove previous stuff (if any)
-        do{
-            try stack.dropAllData()
-        }catch{
-            print("Error droping all objects in DB")
-        }
-        
-        
         // Create Pin Drop (testing)
         _ = Pin(lat: 44.5192, long: -88.0198, context: stack.context)
         _ = Pin(lat: 32.2217, long: -110.9265, context: stack.context)
