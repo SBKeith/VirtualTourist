@@ -1,9 +1,8 @@
 //
-//  NotebooksViewController.swift
-//  CoolNotes
+//  MapViewController.swift
+//  VirtualTourist
 //
-//  Created by Fernando Rodríguez Romero on 10/03/16.
-//  Copyright © 2016 udacity.com. All rights reserved.
+//  Created by Keith Kowalski on 7/10/2016
 //
 
 import UIKit
