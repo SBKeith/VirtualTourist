@@ -12,6 +12,7 @@ import MapKit
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var tapToDeleteView: UIView!
     
     // Get the stack
     let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -102,6 +103,12 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             mapView.addAnnotation(annotation)
         }
     }
+    
+    @IBAction func editButtonTapped(sender: UIBarButtonItem) {
+        
+        
+    }
+    
 }
 
 // MARK:  - Fetches

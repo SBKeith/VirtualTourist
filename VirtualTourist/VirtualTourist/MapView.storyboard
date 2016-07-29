@@ -20,17 +20,59 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="LXo-C8-bTV">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                             </mapView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M6r-uj-0an">
+                                <rect key="frame" x="0.0" y="600" width="600" height="75"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Tap Pins to Delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G1E-BL-uaf">
+                                        <rect key="frame" x="0.0" y="-600" width="139" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="deviceRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="75" id="ZQI-AS-Zy8"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="LXo-C8-bTV" secondAttribute="trailing" id="MP8-Jn-fAK"/>
-                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="OHL-Nz-Ud6"/>
-                            <constraint firstItem="LXo-C8-bTV" firstAttribute="leading" secondItem="SdU-1F-NjG" secondAttribute="leading" id="T5U-2W-8lA"/>
-                            <constraint firstItem="LXo-C8-bTV" firstAttribute="top" secondItem="Fh0-r2-UsY" secondAttribute="bottom" id="Z6Z-ct-LsO"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="1fv-c0-HZU"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="M6r-uj-0an" secondAttribute="bottom" id="3Pn-O1-Xns"/>
+                            <constraint firstAttribute="trailing" secondItem="M6r-uj-0an" secondAttribute="trailing" id="4YV-Bf-Anu"/>
+                            <constraint firstItem="LXo-C8-bTV" firstAttribute="leading" secondItem="SdU-1F-NjG" secondAttribute="leading" id="91f-1r-rsH"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="BYK-qU-Sh4"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="M6r-uj-0an" secondAttribute="bottom" id="HPI-VX-xSe"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="IHX-MB-tZq"/>
+                            <constraint firstItem="LXo-C8-bTV" firstAttribute="top" secondItem="Fh0-r2-UsY" secondAttribute="bottom" id="PeS-YU-4zJ"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="Pt9-s1-ADf"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="Qmc-Qf-Lp8"/>
+                            <constraint firstAttribute="trailing" secondItem="LXo-C8-bTV" secondAttribute="trailing" id="RDI-DR-Ud1"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="top" secondItem="LXo-C8-bTV" secondAttribute="bottom" id="V20-b3-E9g"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="top" secondItem="Fh0-r2-UsY" secondAttribute="bottom" id="k4x-ir-JBb"/>
+                            <constraint firstItem="M6r-uj-0an" firstAttribute="leading" secondItem="SdU-1F-NjG" secondAttribute="leading" id="o9Z-8P-7WX"/>
+                            <constraint firstItem="bSy-ef-cFI" firstAttribute="top" secondItem="M6r-uj-0an" secondAttribute="bottom" id="vAZ-Ld-2TN"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="IHX-MB-tZq"/>
+                                <exclude reference="Qmc-Qf-Lp8"/>
+                                <exclude reference="V20-b3-E9g"/>
+                                <exclude reference="k4x-ir-JBb"/>
+                                <exclude reference="3Pn-O1-Xns"/>
+                                <exclude reference="HPI-VX-xSe"/>
+                                <exclude reference="Pt9-s1-ADf"/>
+                                <exclude reference="vAZ-Ld-2TN"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="sbw-K5-TF5">
-                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="hh4-au-EQo"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="hh4-au-EQo">
+                            <connections>
+                                <action selector="editButtonTapped:" destination="ZIz-M6-xnG" id="5yp-kF-nqZ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="LXo-C8-bTV" id="qDr-0F-dRm"/>
@@ -38,7 +80,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FtA-3g-rcg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1162" y="299"/>
+            <point key="canvasLocation" x="1162" y="298.5"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kac-bv-ySV">
