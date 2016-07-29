@@ -23,8 +23,8 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M6r-uj-0an">
                                 <rect key="frame" x="0.0" y="600" width="600" height="75"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Tap Pins to Delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G1E-BL-uaf">
-                                        <rect key="frame" x="0.0" y="-600" width="139" height="21"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap Pins to Delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G1E-BL-uaf">
+                                        <rect key="frame" x="230.5" y="27" width="139" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="deviceRGB"/>
                                         <nil key="highlightedColor"/>
@@ -32,7 +32,9 @@
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstItem="G1E-BL-uaf" firstAttribute="centerX" secondItem="M6r-uj-0an" secondAttribute="centerX" id="1WT-VM-Trc"/>
                                     <constraint firstAttribute="height" constant="75" id="ZQI-AS-Zy8"/>
+                                    <constraint firstItem="G1E-BL-uaf" firstAttribute="centerY" secondItem="M6r-uj-0an" secondAttribute="centerY" id="mCw-Oo-amt"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -68,13 +70,16 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="sbw-K5-TF5">
-                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="hh4-au-EQo">
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="hh4-au-EQo">
                             <connections>
                                 <action selector="editButtonTapped:" destination="ZIz-M6-xnG" id="5yp-kF-nqZ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="deleteMessageView" destination="M6r-uj-0an" id="xgX-rI-yIO"/>
+                        <outlet property="editButton" destination="hh4-au-EQo" id="Zqs-Vu-5sK"/>
+                        <outlet property="mainView" destination="SdU-1F-NjG" id="SQz-W4-Xia"/>
                         <outlet property="mapView" destination="LXo-C8-bTV" id="qDr-0F-dRm"/>
                     </connections>
                 </viewController>

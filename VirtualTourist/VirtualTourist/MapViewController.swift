@@ -12,7 +12,9 @@ import MapKit
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var tapToDeleteView: UIView!
+    @IBOutlet weak var mainView: UIView!
+    @IBOutlet weak var deleteMessageView: UIView!
+    @IBOutlet weak var editButton: UIBarButtonItem!
     
     // Get the stack
     let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -106,8 +108,27 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     @IBAction func editButtonTapped(sender: UIBarButtonItem) {
         
+        switch sender.tag {
+            
+        case 0:
+            UIView.animateWithDuration(0.1) {
+                
+                self.mainView.frame.origin.y -= self.deleteMessageView.frame.size.height
+                self.editButton.tag = 1
+                self.editButton.title = "Done"
+            }
+        case 1:
+            UIView.animateWithDuration(0.1, animations: { 
+                
+                self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height
+                self.editButton.tag = 0
+                self.editButton.title = "Edit"
+            })
+            
+        default: break
+        }
         
-    }
+            }
     
 }
 
