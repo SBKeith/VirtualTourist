@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="600" width="600" height="75"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap Pins to Delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G1E-BL-uaf">
-                                        <rect key="frame" x="230.5" y="27" width="139" height="21"/>
+                                        <rect key="frame" x="231" y="27" width="139" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="deviceRGB"/>
                                         <nil key="highlightedColor"/>
@@ -70,7 +70,7 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="sbw-K5-TF5">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="hh4-au-EQo">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="hh4-au-EQo">
                             <connections>
                                 <action selector="editButtonTapped:" destination="ZIz-M6-xnG" id="5yp-kF-nqZ"/>
                             </connections>

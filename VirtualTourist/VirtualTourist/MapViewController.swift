@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 import MapKit
 
-class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
+class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var mainView: UIView!
@@ -19,7 +19,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     // Get the stack
     let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var pins = [Pin]()
-    var pin: Pin?
     
     // MARK:  - Properties
     var fetchedResultsController : NSFetchedResultsController?{
@@ -40,6 +39,9 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Set delegate
+        mapView.delegate = self
         
         // Add gesture recognizer
         let longTouch = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addNewAnnotation(_:)))
@@ -73,7 +75,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             let annotation = MKPointAnnotation()
             let pointLocation: CLLocationCoordinate2D
             
-            pointLocation = pins[dropPin].coordinates
+            pointLocation = pins[dropPin].coordinate
             annotation.coordinate = pointLocation
             
             mapView.addAnnotation(annotation)
@@ -84,6 +86,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         
         let tapPoint: CGPoint = sender.locationInView(mapView)
         let mapCoordinate = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
+        
+        var pin: Pin?
         
         if sender.state == .Began {
             let annotation = MKPointAnnotation()
@@ -114,22 +118,50 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             UIView.animateWithDuration(0.1) {
                 
                 self.mainView.frame.origin.y -= self.deleteMessageView.frame.size.height
-                self.editButton.tag = 1
-                self.editButton.title = "Done"
+                
+                let updatedEditButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(self.editButtonTapped(_:)))
+                updatedEditButton.tag = 1
+                self.navigationItem.rightBarButtonItem = updatedEditButton
             }
         case 1:
             UIView.animateWithDuration(0.1, animations: { 
                 
                 self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height
-                self.editButton.tag = 0
-                self.editButton.title = "Edit"
+                
+                let updatedEditButton = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(self.editButtonTapped(_:)))
+                updatedEditButton.tag = 0
+                self.navigationItem.rightBarButtonItem = updatedEditButton
             })
-            
         default: break
         }
         
-            }
+        // Remove pin from map
+        
+        // Remove location from core data
+        
+    }
     
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        print(view.annotation)
+        
+//        let pin = view.annotation as! Pin
+        
+//        if self.navigationItem.rightBarButtonItem?.tag == 1 {
+//            mapView.removeAnnotation(pin)
+//            
+//            fetchedResultsController!.managedObjectContext.deleteObject(pin)
+//            delegate.stack.autoSave(5)
+//        }
+    }
+    
+//    func deletePin(pin: Pin) {
+//        mapView.removeAnnotation(pin)
+//        context.deleteObject(pin)
+//        context.saveQuietly()
+//        
+//        print("Pin deleted")
+//    }
 }
 
 // MARK:  - Fetches
@@ -145,7 +177,3 @@ extension MapViewController {
         }
     }
 }
-
-//            // Delete any existing annotations.
-//            if mapView.annotations.count != 0 {
-//                mapView.removeAnnotations(mapView.annotations)
