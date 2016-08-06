@@ -17,8 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func preloadData(){
         // Create Pin Drop (testing)
-        _ = Pin(lat: 44.5192, long: -88.0198, context: stack.context)
-        _ = Pin(lat: 32.2217, long: -110.9265, context: stack.context)
+//        _ = Pin(latitude: 44.5192, longitude: -88.0198, context: stack.context)
+//        _ = Pin(latitude: 32.2217, longitude: -110.9265, context: stack.context)
         
         // Check out the "data" field when you print an NSManagedObject subclass.
         // It looks like a Dictionary and the values in it are called
@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        preloadData()
+//        preloadData()
         
         return true
     }

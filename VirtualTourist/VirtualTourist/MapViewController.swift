@@ -56,7 +56,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         do {
             if let results = try delegate.stack.context.executeFetchRequest(fetchRequest) as? [Pin] {
                 pins = results
-                print("Preloaded data: \n\(pins)\n\n")
+                //                print("Preloaded data: \n\(pins)\n\n")
             }
         } catch {
             fatalError("There was an error fetching the list of pins.")
@@ -70,15 +70,16 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     // Map persistent data (currently just preloaded data from AppDelegate)
     func mapSavedAnnotations() {
-        
-        for dropPin in 0 ... (pins.count - 1) {
-            let annotation = MKPointAnnotation()
-            let pointLocation: CLLocationCoordinate2D
-            
-            pointLocation = pins[dropPin].coordinate
-            annotation.coordinate = pointLocation
-            
-            mapView.addAnnotation(annotation)
+        if pins.count > 0 {
+            for dropPin in 0 ... (pins.count - 1) {
+                let annotation = MKPointAnnotation()
+                let pointLocation: CLLocationCoordinate2D
+                
+                pointLocation = pins[dropPin].coordinate
+                annotation.coordinate = pointLocation
+                
+                mapView.addAnnotation(annotation)
+            }
         }
     }
     
@@ -124,7 +125,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
                 self.navigationItem.rightBarButtonItem = updatedEditButton
             }
         case 1:
-            UIView.animateWithDuration(0.1, animations: { 
+            UIView.animateWithDuration(0.1, animations: {
                 
                 self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height
                 
@@ -134,34 +135,34 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
             })
         default: break
         }
-        
-        // Remove pin from map
-        
-        // Remove location from core data
-        
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        print(view.annotation)
+        // TODO: Set check for 'edit' bar button item status (dictate delete vs change view controller)
         
-//        let pin = view.annotation as! Pin
+        // Set context
+        let context = fetchedResultsController?.managedObjectContext
         
-//        if self.navigationItem.rightBarButtonItem?.tag == 1 {
-//            mapView.removeAnnotation(pin)
-//            
-//            fetchedResultsController!.managedObjectContext.deleteObject(pin)
-//            delegate.stack.autoSave(5)
-//        }
+        // Set entity to reference
+        let fetchPinsRequest = NSFetchRequest(entityName: "Pin")
+        
+        // Set rules for predicate (based on Latitude)
+        let fetchPredicate = NSPredicate(format: "lat contains %@ AND long contains %@", "\(view.annotation!.coordinate.latitude)", "\(view.annotation!.coordinate.longitude)")
+        fetchPinsRequest.predicate = fetchPredicate
+        fetchPinsRequest.returnsObjectsAsFaults = false
+        
+        let fetchedPins = try! context?.executeFetchRequest(fetchPinsRequest) as? [Pin]
+        
+        // Remove pin from map
+        mapView.removeAnnotation(view.annotation!)
+        
+        // Remove pin in core data
+        for pinToDelete in fetchedPins! {            
+            context?.deleteObject(pinToDelete)
+        }
+        delegate.stack.autoSave(5)
     }
-    
-//    func deletePin(pin: Pin) {
-//        mapView.removeAnnotation(pin)
-//        context.deleteObject(pin)
-//        context.saveQuietly()
-//        
-//        print("Pin deleted")
-//    }
 }
 
 // MARK:  - Fetches

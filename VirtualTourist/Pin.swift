@@ -12,7 +12,7 @@ import MapKit
 
 
 class Pin: NSManagedObject, MKAnnotation {
-    
+
     var coordinate: CLLocationCoordinate2D {
         set {
             lat = NSNumber(double: newValue.latitude)
@@ -22,7 +22,7 @@ class Pin: NSManagedObject, MKAnnotation {
             return CLLocationCoordinate2D(latitude: lat as! Double, longitude: long as! Double)
         }
     }
-    
+
     convenience init(lat: Double, long: Double, context: NSManagedObjectContext) {
         if let ent = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
