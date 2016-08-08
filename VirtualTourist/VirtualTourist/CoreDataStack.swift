@@ -84,8 +84,6 @@ extension CoreDataStack  {
         try coordinator.destroyPersistentStoreAtURL(dbURL, withType:NSSQLiteStoreType , options: nil)
         
         try addStoreCoordinator(NSSQLiteStoreType, configuration: nil, storeURL: dbURL, options: nil)
-        
-        
     }
 }
 

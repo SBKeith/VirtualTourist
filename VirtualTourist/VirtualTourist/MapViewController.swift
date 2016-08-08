@@ -14,20 +14,20 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var deleteMessageView: UIView!
-    @IBOutlet weak var editButton: UIBarButtonItem!
-    
-    // Get the stack
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    var pins = [Pin]()
+    @IBOutlet weak var editBarButtonItem: UIBarButtonItem!
     
     // MARK:  - Properties
+    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let context = (UIApplication.sharedApplication().delegate as! AppDelegate).stack.context
+    var pins = [Pin]()
+
     var fetchedResultsController : NSFetchedResultsController?{
         didSet{
             fetchedResultsController?.delegate = self
-            executeSearch()
         }
     }
     
+    // Initializers
     init(fetchedResultsController fc : NSFetchedResultsController) {
         fetchedResultsController = fc
         super.init(nibName: nil, bundle: nil)
@@ -40,6 +40,9 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set bar button item title
+        navigationItem.rightBarButtonItem = editButtonItem()
+        
         // Set delegate
         mapView.delegate = self
         
@@ -51,16 +54,17 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         // Create a fetchrequest
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "lat", ascending: true), NSSortDescriptor(key: "long", ascending: true)]
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: delegate.stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         
+        // Get the saved pins
         do {
-            if let results = try delegate.stack.context.executeFetchRequest(fetchRequest) as? [Pin] {
+            if let results = try context.executeFetchRequest(fetchRequest) as? [Pin] {
                 pins = results
-                //                print("Preloaded data: \n\(pins)\n\n")
             }
         } catch {
             fatalError("There was an error fetching the list of pins.")
         }
+        
         // Map all persistant data
         mapSavedAnnotations()
     }
@@ -68,7 +72,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     // MARK: Helper Functions
     
-    // Map persistent data (currently just preloaded data from AppDelegate)
+    // Map persistent data
     func mapSavedAnnotations() {
         if pins.count > 0 {
             for dropPin in 0 ... (pins.count - 1) {
@@ -83,21 +87,21 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         }
     }
     
+    // Add new drop pin
     func addNewAnnotation(sender: UILongPressGestureRecognizer) {
         
-        let tapPoint: CGPoint = sender.locationInView(mapView)
-        let mapCoordinate = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
-        
-        var pin: Pin?
-        
         if sender.state == .Began {
+            let tapPoint: CGPoint = sender.locationInView(mapView)
+            let mapCoordinate = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
+            var pin: Pin?
             let annotation = MKPointAnnotation()
+            
             annotation.coordinate = mapCoordinate
             
             // add annotation to core data and store Lat / Long in core data
             if pin == nil {
-                if let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: delegate.stack.context) {
-                    pin = Pin(entity: entity, insertIntoManagedObjectContext: delegate.stack.context)
+                if let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context) {
+                    pin = Pin(entity: entity, insertIntoManagedObjectContext: context)
                     pin?.lat = mapCoordinate.latitude
                     pin?.long = mapCoordinate.longitude
                 }
@@ -111,70 +115,58 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         }
     }
     
-    @IBAction func editButtonTapped(sender: UIBarButtonItem) {
+    // Delete pins from core data
+    func deletePins(tappedPin: MKAnnotation) {
         
-        switch sender.tag {
-            
-        case 0:
-            UIView.animateWithDuration(0.1) {
-                
-                self.mainView.frame.origin.y -= self.deleteMessageView.frame.size.height
-                
-                let updatedEditButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(self.editButtonTapped(_:)))
-                updatedEditButton.tag = 1
-                self.navigationItem.rightBarButtonItem = updatedEditButton
-            }
-        case 1:
-            UIView.animateWithDuration(0.1, animations: {
-                
-                self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height
-                
-                let updatedEditButton = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(self.editButtonTapped(_:)))
-                updatedEditButton.tag = 0
-                self.navigationItem.rightBarButtonItem = updatedEditButton
-            })
-        default: break
-        }
-    }
-    
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        
-        // TODO: Set check for 'edit' bar button item status (dictate delete vs change view controller)
+        mapView.removeAnnotation(tappedPin)
         
         // Set context
-        let context = fetchedResultsController?.managedObjectContext
+        let managedObjContext = fetchedResultsController?.managedObjectContext
         
         // Set entity to reference
         let fetchPinsRequest = NSFetchRequest(entityName: "Pin")
         
         // Set rules for predicate (based on Latitude)
-        let fetchPredicate = NSPredicate(format: "lat contains %@ AND long contains %@", "\(view.annotation!.coordinate.latitude)", "\(view.annotation!.coordinate.longitude)")
+        let fetchPredicate = NSPredicate(format: "lat contains %@ AND long contains %@", "\(tappedPin.coordinate.latitude)", "\(tappedPin.coordinate.longitude)")
         fetchPinsRequest.predicate = fetchPredicate
         fetchPinsRequest.returnsObjectsAsFaults = false
         
-        let fetchedPins = try! context?.executeFetchRequest(fetchPinsRequest) as? [Pin]
+        let fetchedPins = try! managedObjContext?.executeFetchRequest(fetchPinsRequest) as? [Pin]
         
-        // Remove pin from map
-        mapView.removeAnnotation(view.annotation!)
-        
-        // Remove pin in core data
-        for pinToDelete in fetchedPins! {            
-            context?.deleteObject(pinToDelete)
+        // Remove pin from model
+        for pinToDelete in fetchedPins! {
+            managedObjContext?.deleteObject(pinToDelete)
         }
         delegate.stack.autoSave(5)
     }
-}
-
-// MARK:  - Fetches
-extension MapViewController {
     
-    func executeSearch(){
-        if let fc = fetchedResultsController{
-            do{
-                try fc.performFetch()
-            }catch let e as NSError{
-                print("Error while trying to perform a search: \n\(e)\n\(fetchedResultsController)")
-            }
+    func viewPin(tappedPin: MKAnnotation) {
+        
+        let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
+        
+        navigationController!.pushViewController(photoVC, animated: true)
+
+    }
+    
+    override func setEditing(editing: Bool, animated: Bool) {
+        
+        super.setEditing(editing, animated: false)
+        
+        // Show delete message view when editing button is tapped
+        UIView.animateWithDuration(0.1) { 
+            self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height * (editing ? -1 : 1)
+        }
+    }
+    
+    // Delegate method for selection of existing annotation
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        // Deselect pin; this allows it to be selected again if it's not deleted
+        mapView.deselectAnnotation(view.annotation!, animated: false)
+        
+        // Remove pin from model
+        if let tappedPin = view.annotation {
+            editing ? deletePins(tappedPin) : viewPin(tappedPin)
         }
     }
 }
