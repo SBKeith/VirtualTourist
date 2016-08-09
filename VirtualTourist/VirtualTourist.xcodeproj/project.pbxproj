@@ -19,6 +19,7 @@
 		47A709201D289863002BDBB8 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7091F1D289863002BDBB8 /* MapViewController.swift */; };
 		47A709221D28B7B0002BDBB8 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A709211D28B7B0002BDBB8 /* MapKit.framework */; };
 		47BC68DB1D2DB9DA00410D7C /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 47BC68D91D2DB9DA00410D7C /* Model.xcdatamodeld */; };
+		D81035D41D59DC32003C9B56 /* FlickrNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */; };
 		D830874F1D5878A100E44D59 /* PhotosCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D830874E1D5878A100E44D59 /* PhotosCollectionViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +38,7 @@
 		47A7091F1D289863002BDBB8 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		47A709211D28B7B0002BDBB8 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		47BC68DA1D2DB9DA00410D7C /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrNetworkManager.swift; sourceTree = "<group>"; };
 		D830874E1D5878A100E44D59 /* PhotosCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosCollectionViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +110,7 @@
 				47585E181D2ED55B007B568B /* Pin.swift */,
 				47585E191D2ED55B007B568B /* Photo+CoreDataProperties.swift */,
 				47585E1A1D2ED55B007B568B /* Photo.swift */,
+				D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -202,6 +205,7 @@
 				D830874F1D5878A100E44D59 /* PhotosCollectionViewController.swift in Sources */,
 				47585E1B1D2ED55B007B568B /* Pin+CoreDataProperties.swift in Sources */,
 				47585E161D2ED485007B568B /* CoreDataStack.swift in Sources */,
+				D81035D41D59DC32003C9B56 /* FlickrNetworkManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
