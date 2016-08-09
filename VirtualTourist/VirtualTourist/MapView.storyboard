@@ -94,7 +94,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="KwK-z2-1Kg">
+                            <mapView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" showsBuildings="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KwK-z2-1Kg">
                                 <rect key="frame" x="0.0" y="64" width="600" height="150"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="150" id="d8y-Sd-4db"/>
@@ -160,6 +160,7 @@
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Ybw-Mf-QyX" id="Pbn-n2-I2t"/>
+                        <outlet property="mapView" destination="KwK-z2-1Kg" id="V7H-8Y-RNl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rNc-mz-Eyg" userLabel="First Responder" sceneMemberID="firstResponder"/>

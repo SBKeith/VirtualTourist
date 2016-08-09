@@ -143,9 +143,9 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     func viewPin(tappedPin: MKAnnotation) {
         
         let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
+        photoVC.pin = tappedPin
         
         navigationController!.pushViewController(photoVC, animated: true)
-
     }
     
     override func setEditing(editing: Bool, animated: Bool) {
