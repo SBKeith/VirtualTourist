@@ -17,6 +17,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
+    let photoTemp = PhotoCollectionViewCell()
+    
     var pin: MKAnnotation? = nil
     
     override func viewDidLoad() {
@@ -28,6 +30,23 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         // Set pin from selected annotation; adjust map positioning
         mapView.addAnnotation(pin!)
         mapView.setRegion(MKCoordinateRegion(center: pin!.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+        
+        // Set delegaet and dataSource
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        setupCollectionFlowLayout()
+        
+        // MOVE TO PHOTO.SWIFT - for testing purposes only!
+        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(44.5192, long: -88.0198, page: 1) { (photos, pages, error) -> Void in
+            
+            dispatch_async(dispatch_get_main_queue(), { 
+                
+                for photo in photos! where photo["url_m"] != nil {
+                    print(photo.description)
+                }
+            })
+        }
     }
 
     // Dismiss collection view controller
@@ -54,5 +73,20 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         // Configure the cell
     
         return cell
+    }
+    
+    // TEMP USE
+    func setupCollectionFlowLayout() {
+        let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
+        let space: CGFloat = 3.0
+        let dimension = (view.frame.size.width - ((items + 1) * space)) / items
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumLineSpacing = 8.0 - items
+        layout.minimumInteritemSpacing = space
+        layout.itemSize = CGSizeMake(dimension, dimension)
+        
+        collectionView.collectionViewLayout = layout
     }
 }
