@@ -17,7 +17,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
-    var photoURLs = [NSURL]?()
+    var photoURLs = [UIImage]?()
     
     var pin: MKAnnotation? = nil
     
@@ -42,17 +42,32 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         // MOVE TO PHOTO.SWIFT - for testing purposes only!
         FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(44.5192, long: -88.0198, page: 1) { (photos, pages, error) -> Void in
-//
-//
             
-            
-                for photo in photos! where photo["url_m"] != nil {
-                    print(photo["url_m"]!)
+            for photo in photos! where photo["url_m"] != nil {
+                print(photo["url_m"]!)
+                
+                let imageURL = photo["url_m"]!
+                
+                
+                self.getURL(imageURL as? NSURL) { (result, error) -> Void in
                     
-                    self.photoURLs?.append(photo["url_m"] as! NSURL)
+                    guard error == nil else {
+                        print(error)
+                        return
+                    }
                     
+                    guard let result = result else {
+                        print("No image was obtained from URL")
+                        return
+                    }
+                    
+                    self.photoURLs?.append(result as! UIImage)
                 }
-            
+            }
+        }
+        print(photoURLs!.count)
+    }
+    
 //
 //                    if let url = NSURL(string: photo["url_m"] as! String) {
 //                        if let data = NSData(contentsOfURL: url) {
@@ -62,15 +77,18 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 ////                    let newImage = UIImage(data: NSData(contentsOfURL: NSURL(string: photo["url_m"] as! String)!)!)
 ////                    self.photoTemp.photoImageView.image = newImage
 //                }
-        }
-        
-        print(self.photoURLs?.count)
-
-    }
+//    }
     
-    func getURL(photoURL: NSURL) {
-     
+    func getURL(photoURL: NSURL?, handler: (result: AnyObject?, error: String?) -> Void) {
         
+        if let url = photoURL {
+            let data = NSData(contentsOfURL: url)
+            let image = UIImage(data: data!)
+            
+            handler(result: image, error: nil)
+        } else {
+            handler(result: nil, error: "Error obtaining image URL")
+        }
     }
 
     // Dismiss collection view controller
