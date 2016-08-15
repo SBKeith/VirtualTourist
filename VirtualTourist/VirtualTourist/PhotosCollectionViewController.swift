@@ -17,7 +17,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
-    let photoTemp = PhotoCollectionViewCell()
+    var photoURLs = [NSURL]?()
     
     var pin: MKAnnotation? = nil
     
@@ -35,18 +35,42 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        setupCollectionFlowLayout()
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        
+        layout.itemSize = CGSizeMake(120, 120)
+        self.collectionView.setCollectionViewLayout(layout, animated: true)
         
         // MOVE TO PHOTO.SWIFT - for testing purposes only!
         FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(44.5192, long: -88.0198, page: 1) { (photos, pages, error) -> Void in
+//
+//
             
-            dispatch_async(dispatch_get_main_queue(), { 
-                
+            
                 for photo in photos! where photo["url_m"] != nil {
-                    print(photo.description)
+                    print(photo["url_m"]!)
+                    
+                    self.photoURLs?.append(photo["url_m"] as! NSURL)
+                    
                 }
-            })
+            
+//
+//                    if let url = NSURL(string: photo["url_m"] as! String) {
+//                        if let data = NSData(contentsOfURL: url) {
+//                            self.photoTemp.photoImageView.image = UIImage(data: data)
+//                        }
+//                    }
+////                    let newImage = UIImage(data: NSData(contentsOfURL: NSURL(string: photo["url_m"] as! String)!)!)
+////                    self.photoTemp.photoImageView.image = newImage
+//                }
         }
+        
+        print(self.photoURLs?.count)
+
+    }
+    
+    func getURL(photoURL: NSURL) {
+     
+        
     }
 
     // Dismiss collection view controller
@@ -64,29 +88,31 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 0
+        return 30
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
+        
+        
     
         // Configure the cell
     
         return cell
     }
     
-    // TEMP USE
-    func setupCollectionFlowLayout() {
-        let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
-        let space: CGFloat = 3.0
-        let dimension = (view.frame.size.width - ((items + 1) * space)) / items
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = 8.0 - items
-        layout.minimumInteritemSpacing = space
-        layout.itemSize = CGSizeMake(dimension, dimension)
-        
-        collectionView.collectionViewLayout = layout
-    }
+    // Collection view layout
+//    func setupCollectionFlowLayout() {
+//        let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
+//        let space: CGFloat = 3.0
+//        let dimension = (view.frame.size.width - ((items + 1) * space)) / items
+//        
+//        let layout = UICollectionViewFlowLayout()
+//        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+//        layout.minimumLineSpacing = 8.0 - items
+//        layout.minimumInteritemSpacing = space
+//        layout.itemSize = CGSizeMake(dimension, dimension)
+//        
+//        collectionView.collectionViewLayout = layout
+//    }
 }
