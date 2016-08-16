@@ -2,7 +2,7 @@
 //  Pin+CoreDataProperties.swift
 //  VirtualTourist
 //
-//  Created by Keith Kowalski on 7/7/16.
+//  Created by Keith Kowalski on 8/16/16.
 //  Copyright © 2016 TouchTapApp. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu

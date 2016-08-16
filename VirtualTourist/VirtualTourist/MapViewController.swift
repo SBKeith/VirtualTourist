@@ -17,8 +17,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     @IBOutlet weak var editBarButtonItem: UIBarButtonItem!
     
     // MARK:  - Properties
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    let context = (UIApplication.sharedApplication().delegate as! AppDelegate).stack.context
     var pins = [Pin]()
 
     var fetchedResultsController : NSFetchedResultsController?{

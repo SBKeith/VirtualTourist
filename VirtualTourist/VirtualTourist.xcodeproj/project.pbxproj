@@ -23,6 +23,7 @@
 		D830874F1D5878A100E44D59 /* PhotosCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D830874E1D5878A100E44D59 /* PhotosCollectionViewController.swift */; };
 		D8A29CF31D5F33460086D92B /* NetworkManagerCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A29CF21D5F33460086D92B /* NetworkManagerCalls.swift */; };
 		D8A29CF51D5F49C40086D92B /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A29CF41D5F49C40086D92B /* PhotoCollectionViewCell.swift */; };
+		D8C0A08D1D6306A700B918DA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C0A08C1D6306A700B918DA /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		D830874E1D5878A100E44D59 /* PhotosCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosCollectionViewController.swift; sourceTree = "<group>"; };
 		D8A29CF21D5F33460086D92B /* NetworkManagerCalls.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManagerCalls.swift; sourceTree = "<group>"; };
 		D8A29CF41D5F49C40086D92B /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		D8C0A08C1D6306A700B918DA /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +119,7 @@
 				47585E1A1D2ED55B007B568B /* Photo.swift */,
 				D8A29CF21D5F33460086D92B /* NetworkManagerCalls.swift */,
 				D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */,
+				D8C0A08C1D6306A700B918DA /* Constants.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -209,6 +212,7 @@
 				47BC68DB1D2DB9DA00410D7C /* Model.xcdatamodeld in Sources */,
 				D8A29CF51D5F49C40086D92B /* PhotoCollectionViewCell.swift in Sources */,
 				47585E1C1D2ED55B007B568B /* Pin.swift in Sources */,
+				D8C0A08D1D6306A700B918DA /* Constants.swift in Sources */,
 				D8A29CF31D5F33460086D92B /* NetworkManagerCalls.swift in Sources */,
 				D830874F1D5878A100E44D59 /* PhotosCollectionViewController.swift in Sources */,
 				47585E1B1D2ED55B007B568B /* Pin+CoreDataProperties.swift in Sources */,

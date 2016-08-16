@@ -142,7 +142,7 @@
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
-                                    <outlet property="dataSource" destination="56c-8I-gms" id="Rfx-4F-mfJ"/>
+                                    <outlet property="dataSource" destination="56c-8I-gms" id="OtR-rz-Lsr"/>
                                     <outlet property="delegate" destination="56c-8I-gms" id="FcM-rV-WLW"/>
                                 </connections>
                             </collectionView>
