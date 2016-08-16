@@ -23,7 +23,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", argumentArray: self.pin! as? [AnyObject])
         
         return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
     }()
@@ -90,20 +89,26 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        // MOVE TO PHOTO.SWIFT - for testing purposes only!
-        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(44.5192, long: -88.0198, page: 1) { (photos, pages, error) -> Void in
-            
-            dispatch_async(dispatch_get_main_queue(), {
-                for photo in photos! where photo["url_m"] != nil {
-                    _ = Photo(photoDictionary: photo, context: context)
-                }
-            })
-            delegate.stack.autoSave(5)
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            // MOVE TO PHOTO.SWIFT - for testing purposes only!
+            FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(44.5192, long: -88.0198, page: 1) { (photos, pages, error) -> Void in
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    for photo in photos! where photo["url_m"] != nil {
+                        _ = Photo(photoDictionary: photo, context: context)
+                    }
+                })
+                delegate.stack.autoSave(5)
+            }
         }
-
     }
     
-    func loadPhoto(url: String, handler: (image: UIImage?, error: String) -> Void) {
+    func loadPhoto(photo: Photo, handler: (image: UIImage?, error: String) -> Void) {
+        
+        print(url)
+        
         task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: url)!)) { data, response, downloadError in
             dispatch_async(dispatch_get_main_queue(), {
                 
@@ -134,7 +139,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     }
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("got here")
+        print(fetchedResultsController.sections![section].numberOfObjects)
 
         return fetchedResultsController.sections![section].numberOfObjects
     }
@@ -145,8 +150,10 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        loadPhoto(photo.url!) { (image, error) in
-            
+//        print(photo)
+        
+        loadPhoto(photo) { (image, error) in
+        
             cell.photoImageView.image = image
         }
         
