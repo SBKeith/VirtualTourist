@@ -47,7 +47,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
 //        return "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
     }
     
-    func getPhotosUsingCoordinates(lat: Double, long: Double, page: Int = 1, handler: (photos: [[String : AnyObject]]?, pages: Int, error: String?) -> Void) {
+    func getPhotosUsingCoordinates(lat: Double, long: Double, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
         
         let params = [
             "method": "flickr.photos.search",
@@ -58,7 +58,6 @@ class FlickrNetworkManager: NetworkManagerCalls {
             "format": "json",
             "nojsoncallback": "1",
             "per_page": "30",
-            "page": String(page),
         ]
         
         let request = setupRequest("\(flickrAPI_URL)", params: params)
@@ -66,29 +65,25 @@ class FlickrNetworkManager: NetworkManagerCalls {
         getRequest(request) { (result, error) -> Void in
             
             guard error == nil else {
-                handler(photos: nil, pages: 0, error: error)
+                handler(photos: nil, error: error)
                 return
             }
             
             guard let data = result!["photos"] as? [String : AnyObject] else {
                 print("No photos were found!")
-                handler(photos: nil, pages: 0, error: "Data capture error")
-                return
-            }
-            
-            guard let pages = data["pages"] as? Int else {
-                print("Pages not found!")
-                handler(photos: nil, pages: 0, error: "Data capture error")
+                handler(photos: nil, error: "Data capture error")
                 return
             }
             
             guard let photos = data["photo"] as? [[String: AnyObject]] else {
                 print("No photos were found!")
-                handler(photos: nil, pages: 0, error: "Data capture eror")
+                handler(photos: nil, error: "Data capture eror")
                 return
             }
-                        
-            handler(photos: photos, pages: pages, error: nil)
+            
+//            print(photos.count)
+            
+            handler(photos: photos, error: nil)
         }
     }
 }
