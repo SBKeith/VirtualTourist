@@ -81,7 +81,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
                 return
             }
             
-//            print(photos.count)
+            print(photos.count)
             
             handler(photos: photos, error: nil)
         }

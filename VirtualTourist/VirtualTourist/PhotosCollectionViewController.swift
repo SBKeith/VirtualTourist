@@ -14,22 +14,37 @@ private let reuseIdentifier = "Cell"
 
 class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
 
+    // MARK: -Properties
+    
+    // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
+    // Set variables
     var task: NSURLSessionTask? = nil
     var photosArray = [Photo]()
-    
-    lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-        
-        return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-    }()
-    
-    var photoURLs = [UIImage]?()
     var pin: MKAnnotation? = nil
     
+    // Fetch request
+    let fetchRequest = NSFetchRequest(entityName: "Photo")
+    
+    var fetchedResultsController : NSFetchedResultsController?{
+        didSet{
+            fetchedResultsController?.delegate = self
+        }
+    }
+    
+    // Initializers
+    init(fetchedResultsController fc : NSFetchedResultsController) {
+        fetchedResultsController = fc
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    // MARK: - Loading methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,52 +59,90 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        
-        layout.itemSize = CGSizeMake(120, 120)
-        self.collectionView.setCollectionViewLayout(layout, animated: true)
-        
-        setupCollectionFlowLayout()
-        
+        // Set fetch request sort descriptors
         // Create a fetchrequest
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true), NSSortDescriptor(key: "url", ascending: true)]
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         
+        // Setup collection view cell layout
+        setupCollectionFlowLayout()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         // Get the saved photos from core data
         do {
             if let results = try context.executeFetchRequest(fetchRequest) as? [Photo] {
+                print("Getting Saved Photos")
                 photosArray = results
             }
         } catch {
             fatalError("There was an error fetching the list of pins.")
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        
-            // MOVE TO PHOTO.SWIFT - for testing purposes only!
-            FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates((pin?.coordinate.latitude)!, long: (pin?.coordinate.longitude)!) { (photos, error) -> Void in
-                
-//                self.addNewPhotoAlbum(photos!)
-                
-                var photoTemp: Photo?
-                
-                for photo in photos! {
-                    if photoTemp == nil {
-                        if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-                            photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
-                            photoTemp?.id = photo["id"] as? String
-                            photoTemp?.url = photo["url_m"] as? String
-                        }
-                        print(photoTemp, "\n")
-                    }
-                }
-                delegate.stack.autoSave(5)
+        if photosArray.count == 0 {
+            print("Getting new photos")
+            loadNewPhotos()
+            collectionView.reloadData()
         }
     }
     
+    // MARK: - Helper methods
+
+    // Load a new set of photos for specific pin
+    func loadNewPhotos() {
+        
+        // MOVE TO PHOTO.SWIFT - for testing purposes only!
+        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates((pin?.coordinate.latitude)!, long: (pin?.coordinate.longitude)!) { (photos, error) -> Void in
+            
+            var photoTemp: Photo?
+            
+//            print(photos!.count)
+            
+            for photo in photos! {
+//                if photoTemp == nil {
+                    if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
+                        photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                        photoTemp?.id = photo["id"] as? String
+                        photoTemp?.url = photo["url_m"] as? String
+                        
+                        print(photoTemp?.url)
+//                    }
+                }
+            }
+            do {
+                try delegate.stack.saveContext()
+            } catch {
+                print("Error saving data...")
+            }
+        }
+
+    }
+    
+    
+    // Load photos from URLs
+    func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
+        
+        if photosArray.count > 0 {
+//            for photoInfo in 0 ... (photosArray.count - 1) {
+                if photosArray[indexPath.item].url != nil {
+                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        
+                        guard let data = data, let image = UIImage(data: data) else {
+                            print("Photo not loaded")
+                            return handler(image: nil, error: "Photo not loaded")
+                        }
+                        
+                        return handler(image: image, error: "")
+                    })
+                }
+                task!.resume()
+                }
+//            }
+        }
+    }
+
+    // Collection view cell layout logic (adjusts for portrait vs landscape)
     func setupCollectionFlowLayout() {
         let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
         let space: CGFloat = 3.0
@@ -104,31 +157,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.collectionViewLayout = layout
     }
     
-    // Load photos from URLs
-    func loadPhoto(handler: (image: UIImage?, error: String) -> Void) {
-        
-        if photosArray.count > 0 {
-            for photoInfo in 0 ... (photosArray.count - 1) {
-                if photosArray[photoInfo].url != nil {
-                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[photoInfo].url!)!)) { data, response, downloadError in
-                    dispatch_async(dispatch_get_main_queue(), {
-                        
-                        guard let data = data, let image = UIImage(data: data) else {
-                            print("Photo not loaded")
-                            return handler(image: nil, error: "Photo not loaded")
-                        }
-                        
-                        return handler(image: image, error: "")
-                    })
-                    
-                }
-                task!.resume()
-                }
-            }
-        }
-    }
-
-    
     // Dismiss collection view controller
     func dismissCollectionVC() {
         
@@ -136,34 +164,32 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     }
     
     // MARK: UICollectionViewDataSource
-
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         
         return 1
-        
-//        return self.fetchedResultsController.sections?.count ?? 0
     }
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        print("got here 1")
+//        print("got here 1")
         
-//        return photos.count ?? 0
-        return 5
+        print(photosArray.count < 5 ? photosArray.count : 5)
+        
+        return photosArray.count < 5 ? photosArray.count : 5    // Change this to match max of 30 or less
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        print("got here 2")
+//        print("got here 2")
 
-        
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         
-        loadPhoto() { (image, error) in
-        
-            cell.photoImageView.image = image
+        if indexPath.item < photosArray.count {
+            loadPhoto(indexPath) { (image, error) in
+            
+                cell.photoImageView.image = image
+            }
         }
-        
         return cell
     }
 }
