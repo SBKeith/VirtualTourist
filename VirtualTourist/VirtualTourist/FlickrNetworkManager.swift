@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 
 class FlickrNetworkManager: NetworkManagerCalls {
     
@@ -47,6 +48,31 @@ class FlickrNetworkManager: NetworkManagerCalls {
 //        return "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
     }
     
+    func addNewPhotos(pin: Pin, handler: (error: String?) -> Void) {
+        print("Got to add new photos fucntion")
+        
+        getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude)) { (photos, error) -> Void in
+            dispatch_async(dispatch_get_main_queue(), {
+                
+                var photoTemp: Photo?
+                
+                if photoTemp == nil {
+                    for photo in photos! {
+                        if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
+                            photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                            photoTemp?.id = photo["id"] as? String
+                            photoTemp?.url = photo["url_m"] as? String
+                        }
+                        //                print(photoTemp?.url)
+                    }
+                }
+                print("Getting new photos for dropped pin...")
+                
+                return handler(error: nil)
+            })
+        }
+    }
+
     func getPhotosUsingCoordinates(lat: Double, long: Double, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
         
         let params = [
@@ -81,7 +107,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
                 return
             }
             
-            print(photos.count)
+//            print(photos.count)
             
             handler(photos: photos, error: nil)
         }

@@ -24,6 +24,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     var task: NSURLSessionTask? = nil
     var photosArray = [Photo]()
     var pin: MKAnnotation? = nil
+    var loading = false
+    var photo: Photo?
     
     // Fetch request
     let fetchRequest = NSFetchRequest(entityName: "Photo")
@@ -70,75 +72,43 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        // Get the saved photos from core data
+        
         do {
             if let results = try context.executeFetchRequest(fetchRequest) as? [Photo] {
-                print("Getting Saved Photos")
                 photosArray = results
             }
         } catch {
             fatalError("There was an error fetching the list of pins.")
         }
-        if photosArray.count == 0 {
-            print("Getting new photos")
-            loadNewPhotos()
-            collectionView.reloadData()
-        }
-    }
-    
-    // MARK: - Helper methods
-
-    // Load a new set of photos for specific pin
-    func loadNewPhotos() {
         
-        // MOVE TO PHOTO.SWIFT - for testing purposes only!
-        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates((pin?.coordinate.latitude)!, long: (pin?.coordinate.longitude)!) { (photos, error) -> Void in
-            
-            var photoTemp: Photo?
-            
-//            print(photos!.count)
-            
-            for photo in photos! {
-//                if photoTemp == nil {
-                    if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-                        photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
-                        photoTemp?.id = photo["id"] as? String
-                        photoTemp?.url = photo["url_m"] as? String
-                        
-                        print(photoTemp?.url)
-//                    }
-                }
-            }
-            do {
-                try delegate.stack.saveContext()
-            } catch {
-                print("Error saving data...")
-            }
-        }
+//        if photosArray.count == 0 {
+//            print("addNewPhotos")
+//            photo!.addNewPhotos(context, handler: { _ in
+//                print("Got here")
+////                delegate.stack.autoSave(5)
+//            })
+//        }
 
     }
-    
     
     // Load photos from URLs
     func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
         
         if photosArray.count > 0 {
-//            for photoInfo in 0 ... (photosArray.count - 1) {
-                if photosArray[indexPath.item].url != nil {
-                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
-                    dispatch_async(dispatch_get_main_queue(), {
-                        
-                        guard let data = data, let image = UIImage(data: data) else {
-                            print("Photo not loaded")
-                            return handler(image: nil, error: "Photo not loaded")
-                        }
-                        
-                        return handler(image: image, error: "")
-                    })
-                }
-                task!.resume()
-                }
-//            }
+            if photosArray[indexPath.item].url != nil {
+            task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
+                dispatch_async(dispatch_get_main_queue(), {
+                    
+                    guard let data = data, let image = UIImage(data: data) else {
+                        print("Photo not loaded")
+                        return handler(image: nil, error: "Photo not loaded")
+                    }
+                    
+                    return handler(image: image, error: "")
+                })
+            }
+            task!.resume()
+            }
         }
     }
 
@@ -170,17 +140,12 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     }
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-//        print("got here 1")
         
         print(photosArray.count < 5 ? photosArray.count : 5)
-        
         return photosArray.count < 5 ? photosArray.count : 5    // Change this to match max of 30 or less
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-//        print("got here 2")
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         

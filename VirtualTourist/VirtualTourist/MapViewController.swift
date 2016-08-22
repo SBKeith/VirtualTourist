@@ -102,14 +102,18 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
                     pin = Pin(entity: entity, insertIntoManagedObjectContext: context)
                     pin?.lat = mapCoordinate.latitude
                     pin?.long = mapCoordinate.longitude
+                    
+                    // Add photos to new pin
+                    FlickrNetworkManager.sharedNetworkManager.addNewPhotos(pin!, handler: { _ in do {try delegate.stack.saveContext()} catch {} })
                 }
             }
             
             // Save data
-            delegate.stack.autoSave(5)
+            delegate.stack.autoSave(10)
             
             // set map point
             mapView.addAnnotation(annotation)
+            
         }
     }
     
@@ -143,7 +147,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
         
         photoVC.pin = tappedPin
-        
         navigationController!.pushViewController(photoVC, animated: true)
     }
     
