@@ -6,8 +6,8 @@
         <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin" syncable="YES"/>
     </entity>
     <entity name="Pin" representedClassName=".Pin" syncable="YES">
-        <attribute name="lat" attributeType="Float" defaultValueString="0.0" indexed="YES" syncable="YES"/>
-        <attribute name="long" attributeType="Float" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <attribute name="lat" attributeType="Double" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <attribute name="long" attributeType="Double" defaultValueString="0.0" indexed="YES" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>

@@ -24,28 +24,21 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
-    // Fetch request
-    lazy var fetchedResultsController: NSFetchedResultsController = {
-
-        // Create a fetchrequest
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
-        // Set fetch request sort descriptors
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-        // Set fetch request predicate
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
-
-        return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-    }()
+    var fetchedResultsController : NSFetchedResultsController?{
+        didSet{
+            fetchedResultsController?.delegate = self
+        }
+    }
     
 //    // Initializers
-//    init(fetchedResultsController fc : NSFetchedResultsController) {
-//        fetchedResultsController = fc
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//    
-//    required init?(coder aDecoder: NSCoder) {
-//        super.init(coder: aDecoder)
-//    }
+    init(fetchedResultsController fc : NSFetchedResultsController) {
+        fetchedResultsController = fc
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     
     // MARK: - Loading methods
     override func viewDidLoad() {
@@ -64,29 +57,31 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         // Setup collection view cell layout
         setupCollectionFlowLayout()
-        
-        fetchedResultsController.delegate = self
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        do {
-            try fetchedResultsController.performFetch()
-            print("Photos loaded via core data")
-        } catch let error as NSError {
-            print("\(error)")
-        }
-        
-//        if photosArray.count == 0 {
-//            print("addNewPhotos")
-//            photo!.addNewPhotos(context, handler: { _ in
-//                print("Got here")
-////                delegate.stack.autoSave(5)
-//            })
-//        }
-
+  
+        photosArray = photosFetchRequest()
+        print(photosArray.count)
     }
+    
+    func photosFetchRequest() -> [Photo] {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+//        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        // Get the saved pins
+        do {
+            return try context.executeFetchRequest(fetchRequest) as! [Photo]
+        } catch {
+            print("There was an error fetching the list of pins.")
+            return [Photo]()
+        }
+    }
+    
     
     // Load photos from URLs
     func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
@@ -137,25 +132,15 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        print("Count: ", fetchedResultsController.sections![section].numberOfObjects)
         return photosArray.count
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
-        let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        print(photo)
-        
-//        cell.photoImageView.image = loadPhoto(<#T##indexPath: NSIndexPath##NSIndexPath#>, handler: <#T##(image: UIImage?, error: String) -> Void#>)
-        
-        
-//        if indexPath.item < photosArray.count {
-            loadPhoto(indexPath) { (image, error) in
-            
-//                cell.photoImageView.image = image
-//            }
+        loadPhoto(indexPath) { (image, error) in
+        cell.photoImageView.image = image
         }
         return cell
     }

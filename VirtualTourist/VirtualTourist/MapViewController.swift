@@ -87,18 +87,17 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     func addNewAnnotation(sender: UILongPressGestureRecognizer) {
         
         if sender.state == .Began {
-            let tapPoint: CGPoint = sender.locationInView(mapView)
+            let tapPoint = sender.locationInView(self.mapView)
             let mapCoordinate = mapView.convertPoint(tapPoint, toCoordinateFromView: mapView)
-            let annotation = MKPointAnnotation()
             
+            let annotation = MKPointAnnotation()
             annotation.coordinate = mapCoordinate
             
             // add annotation to core data and store Lat / Long in core data
                 if let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context) {
                     let newPin = Pin(entity: entity, insertIntoManagedObjectContext: context)
-                    newPin.lat = mapCoordinate.latitude
-                    newPin.long = mapCoordinate.longitude
-                    
+                    newPin.lat = annotation.coordinate.latitude 
+                    newPin.long = annotation.coordinate.longitude
                     pins.append(newPin)
                     
                     // Add photos to new pin
@@ -123,8 +122,32 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         }
     }
     
+    // Function changes controller state
+    override func setEditing(editing: Bool, animated: Bool) {
+        
+        super.setEditing(editing, animated: false)
+        
+        // Show delete message view when editing button is tapped
+        UIView.animateWithDuration(0.1) {
+            self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height * (editing ? -1 : 1)
+        }
+    }
+    
+    func viewPin(tappedPin: Pin) {
+        
+        let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
+        
+        photoVC.photosArray.removeAll() // Not sure...
+        photoVC.pin = tappedPin
+        navigationController!.pushViewController(photoVC, animated: true)
+    }
+    
     // Delete pins from core data
     func deletePins(tappedPin: MKAnnotation) {
+        
+        print("Deleting pin...")
+        
+        print(tappedPin.coordinate.latitude, tappedPin.coordinate.longitude)
         
         mapView.removeAnnotation(tappedPin)
         
@@ -151,55 +174,17 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         } catch {print("Failed to save after pin deletion.")}
     }
     
-    func viewPin(tappedPin: Pin) {
-
-        print("Got here!: \(tappedPin)")
-        
-        let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
-        
-        photoVC.pin = tappedPin
-        navigationController!.pushViewController(photoVC, animated: true)
-    }
-    
-    // Function changes controller state
-    override func setEditing(editing: Bool, animated: Bool) {
-        
-        super.setEditing(editing, animated: false)
-        
-        // Show delete message view when editing button is tapped
-        UIView.animateWithDuration(0.1) { 
-            self.mainView.frame.origin.y += self.deleteMessageView.frame.size.height * (editing ? -1 : 1)
-        }
-    }
-    
     // Delegate method for selection of existing annotation
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        guard let annotation = view.annotation else {return}
-        
+        let annotation = view.annotation
         tappedPin = nil
-        
-        print("did select annotation view\n", view.annotation?.coordinate.latitude)
-        
+    
         for pin in pins {
-            
-            print(pin.lat, pin.long)
-            
-//            if annotation.coordinate.latitude == pin.lat && annotation.coordinate.longitude == pin.long {
-//                tappedPin = pin
-//                
-//                print(tappedPin)
-//                
-////                viewPin(pin)
-////                editing ? deletePins(annotation!) : viewPin(tappedPin!)
-//            }
+            if annotation!.coordinate.latitude == pin.coordinate.latitude && annotation!.coordinate.longitude == pin.coordinate.longitude {
+                tappedPin = pin
+                editing ? deletePins(annotation!) : viewPin(tappedPin!)
+            }
         }
-        
-        
-        
-        // Remove pin from model
-//        if let tappedPin = view.annotation {
-//            editing ? deletePins(tappedPin) : viewPin(tappedPin)
-//        }
     }
 }

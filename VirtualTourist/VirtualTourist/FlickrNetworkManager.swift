@@ -49,7 +49,6 @@ class FlickrNetworkManager: NetworkManagerCalls {
     }
     
     func addNewPhotos(pin: Pin, handler: (error: String?) -> Void) {
-        print("Got to add new photos fucntion")
         
         getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude)) { (photos, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
