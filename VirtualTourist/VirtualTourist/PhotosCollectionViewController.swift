@@ -15,41 +15,42 @@ private let reuseIdentifier = "Cell"
 class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
 
     // MARK: -Properties
-    
+    // Set variables
+    var pin: Pin? = nil
+    var task: NSURLSessionTask? = nil
+    var photosArray = [Photo]()
+
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     
-    // Set variables
-    var task: NSURLSessionTask? = nil
-    var photosArray = [Photo]()
-    var pin: MKAnnotation? = nil
-    var loading = false
-    var photo: Photo?
-    
     // Fetch request
-    let fetchRequest = NSFetchRequest(entityName: "Photo")
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+
+        // Create a fetchrequest
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        // Set fetch request sort descriptors
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        // Set fetch request predicate
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
+
+        return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+    }()
     
-    var fetchedResultsController : NSFetchedResultsController?{
-        didSet{
-            fetchedResultsController?.delegate = self
-        }
-    }
-    
-    // Initializers
-    init(fetchedResultsController fc : NSFetchedResultsController) {
-        fetchedResultsController = fc
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
+//    // Initializers
+//    init(fetchedResultsController fc : NSFetchedResultsController) {
+//        fetchedResultsController = fc
+//        super.init(nibName: nil, bundle: nil)
+//    }
+//    
+//    required init?(coder aDecoder: NSCoder) {
+//        super.init(coder: aDecoder)
+//    }
     
     // MARK: - Loading methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         // Set left bar button item properties
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "OK", style: .Plain, target: self, action: #selector(dismissCollectionVC))
         
@@ -61,24 +62,20 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        // Set fetch request sort descriptors
-        // Create a fetchrequest
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true), NSSortDescriptor(key: "url", ascending: true)]
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-        
         // Setup collection view cell layout
         setupCollectionFlowLayout()
+        
+        fetchedResultsController.delegate = self
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         do {
-            if let results = try context.executeFetchRequest(fetchRequest) as? [Photo] {
-                photosArray = results
-            }
-        } catch {
-            fatalError("There was an error fetching the list of pins.")
+            try fetchedResultsController.performFetch()
+            print("Photos loaded via core data")
+        } catch let error as NSError {
+            print("\(error)")
         }
         
 //        if photosArray.count == 0 {
@@ -93,7 +90,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     
     // Load photos from URLs
     func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
-        
         if photosArray.count > 0 {
             if photosArray[indexPath.item].url != nil {
             task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
@@ -141,19 +137,25 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        print(photosArray.count < 5 ? photosArray.count : 5)
-        return photosArray.count < 5 ? photosArray.count : 5    // Change this to match max of 30 or less
+        print("Count: ", fetchedResultsController.sections![section].numberOfObjects)
+        return photosArray.count
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
+        let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        if indexPath.item < photosArray.count {
+        print(photo)
+        
+//        cell.photoImageView.image = loadPhoto(<#T##indexPath: NSIndexPath##NSIndexPath#>, handler: <#T##(image: UIImage?, error: String) -> Void#>)
+        
+        
+//        if indexPath.item < photosArray.count {
             loadPhoto(indexPath) { (image, error) in
             
-                cell.photoImageView.image = image
-            }
+//                cell.photoImageView.image = image
+//            }
         }
         return cell
     }

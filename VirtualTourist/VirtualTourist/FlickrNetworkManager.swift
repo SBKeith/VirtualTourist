@@ -63,7 +63,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
                             photoTemp?.id = photo["id"] as? String
                             photoTemp?.url = photo["url_m"] as? String
                         }
-                        //                print(photoTemp?.url)
+//                        print(photoTemp?.url)
                     }
                 }
                 print("Getting new photos for dropped pin...")
