@@ -43,7 +43,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // MARK: - Loading methods
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         // Set left bar button item properties
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "OK", style: .Plain, target: self, action: #selector(dismissCollectionVC))
         
@@ -63,14 +63,13 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         super.viewWillAppear(animated)
   
         photosArray = photosFetchRequest()
-        print(photosArray.count)
     }
     
     func photosFetchRequest() -> [Photo] {
         
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-//        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         
         // Get the saved pins
@@ -81,7 +80,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             return [Photo]()
         }
     }
-    
     
     // Load photos from URLs
     func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
@@ -132,7 +130,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return photosArray.count
+        return photosArray.count < 30 ? photosArray.count : 30
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {

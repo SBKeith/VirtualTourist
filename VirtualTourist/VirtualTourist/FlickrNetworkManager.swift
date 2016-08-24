@@ -61,8 +61,8 @@ class FlickrNetworkManager: NetworkManagerCalls {
                             photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
                             photoTemp?.id = photo["id"] as? String
                             photoTemp?.url = photo["url_m"] as? String
+                            photoTemp?.pin = pin
                         }
-//                        print(photoTemp?.url)
                     }
                 }
                 print("Getting new photos for dropped pin...")
