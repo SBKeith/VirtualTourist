@@ -12,6 +12,9 @@ import CoreData
 
 class PhotoFrame: NSManagedObject {
 
-// Insert code here to add functionality to your managed object subclass
-
+    var imgData: NSData {
+        get {
+            return NSData(data: imageData!)
+        }
+    }
 }

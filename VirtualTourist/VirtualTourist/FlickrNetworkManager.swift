@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 class FlickrNetworkManager: NetworkManagerCalls {
     
@@ -54,6 +55,9 @@ class FlickrNetworkManager: NetworkManagerCalls {
             dispatch_async(dispatch_get_main_queue(), {
                 
                 var photoTemp: Photo?
+                let photoData: PhotoFrame? = nil
+                
+                print("Getting new photos for dropped pin...")
                 
                 if photoTemp == nil {
                     for photo in photos! {
@@ -62,10 +66,19 @@ class FlickrNetworkManager: NetworkManagerCalls {
                             photoTemp?.id = photo["id"] as? String
                             photoTemp?.url = photo["url_m"] as? String
                             photoTemp?.pin = pin
+                            
+                            
+                            let data = NSData(contentsOfURL: NSURL(fileURLWithPath: (photoTemp?.url)!))
+                            print(data)
+                            
+                        // -------- SEE BELOW FOR ISSUE --------
+                            
+                        // Is it necessary to intialize the PhotoFrame entity like this?:
+                            photoData?.imageData = data     // Save photo as NSData to the PhotoFrame entity (Binary Data)
+                            print(photoData?.imageData)     // Data prints as 'nil', this is where I'm stuck.
                         }
                     }
                 }
-                print("Getting new photos for dropped pin...")
                 
                 return handler(error: nil)
             })
@@ -111,4 +124,6 @@ class FlickrNetworkManager: NetworkManagerCalls {
             handler(photos: photos, error: nil)
         }
     }
+    
+//    func addSavedPhotos(pin: Pin)
 }
