@@ -120,6 +120,4 @@ class FlickrNetworkManager: NetworkManagerCalls {
             handler(photos: photos, error: nil)
         }
     }
-    
-//    func addSavedPhotos(pin: Pin)
 }

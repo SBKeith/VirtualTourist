@@ -80,26 +80,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             return [Photo]()
         }
     }
-    
-    // Load photos from URLs
-    func loadPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
-        if photosArray.count > 0 {
-            if photosArray[indexPath.item].url != nil {
-            task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
-                dispatch_async(dispatch_get_main_queue(), {
-                    
-                    guard let data = data, let image = UIImage(data: data) else {
-                        print("Photo not loaded")
-                        return handler(image: nil, error: "Photo not loaded")
-                    }
-                    
-                    return handler(image: image, error: "")
-                })
-            }
-            task!.resume()
-            }
-        }
-    }
 
     // Collection view cell layout logic (adjusts for portrait vs landscape)
     func setupCollectionFlowLayout() {
@@ -114,6 +94,26 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         layout.itemSize = CGSizeMake(dimension, dimension)
         
         collectionView.collectionViewLayout = layout
+    }
+    
+    // Load photos from URLs
+    func loadNewPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
+        if photosArray.count > 0 {
+            if photosArray[indexPath.item].url != nil {
+                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        
+                        guard let data = data, let image = UIImage(data: data) else {
+                            print("Photo not loaded")
+                            return handler(image: nil, error: "Photo not loaded")
+                        }
+                        
+                        return handler(image: image, error: "")
+                    })
+                }
+                task!.resume()
+            }
+        }
     }
     
     // Dismiss collection view controller
@@ -137,9 +137,18 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         
-        loadPhoto(indexPath) { (image, error) in
-        cell.photoImageView.image = image
+        dispatch_async(dispatch_get_main_queue()) { 
+            if let imageData = self.photosArray[indexPath.item].imageData {
+                print("Loading photo from coredata photo image data")
+                cell.photoImageView.image = UIImage(data: imageData)
+            } else {
+                print("Loading new photo from web URL link(s)")
+                self.loadNewPhoto(indexPath) { (image, error) in
+                    cell.photoImageView.image = image
+                }
+            }
         }
+        
         return cell
     }
 }

@@ -137,7 +137,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         
         let photoVC = storyboard!.instantiateViewControllerWithIdentifier("kPhotoCollectionController") as! PhotosCollectionViewController
         
-        photoVC.photosArray.removeAll() // Not sure...
         photoVC.pin = tappedPin
         navigationController!.pushViewController(photoVC, animated: true)
     }
