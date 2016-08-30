@@ -126,6 +126,9 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="x0v-0n-qCU">
                                                     <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                 </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="DAR-cL-9GC">
+                                                    <rect key="frame" x="57" y="56" width="37" height="37"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -137,6 +140,7 @@
                                         </constraints>
                                         <size key="customSize" width="150" height="150"/>
                                         <connections>
+                                            <outlet property="activityIndicatorSpinner" destination="DAR-cL-9GC" id="Lkw-Et-yWQ"/>
                                             <outlet property="photoImageView" destination="x0v-0n-qCU" id="dSw-sb-ynz"/>
                                         </connections>
                                     </collectionViewCell>

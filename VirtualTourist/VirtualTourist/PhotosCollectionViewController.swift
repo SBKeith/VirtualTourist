@@ -15,9 +15,10 @@ private let reuseIdentifier = "Cell"
 class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
 
     // MARK: -Properties
+    let flickrManager = FlickrNetworkManager()
+    
     // Set variables
     var pin: Pin? = nil
-    var task: NSURLSessionTask? = nil
     var photosArray = [Photo]()
 
     // Outlets
@@ -96,26 +97,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.collectionViewLayout = layout
     }
     
-    // Load photos from URLs
-    func loadNewPhoto(indexPath: NSIndexPath, handler: (image: UIImage?, error: String) -> Void) {
-        if photosArray.count > 0 {
-            if photosArray[indexPath.item].url != nil {
-                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
-                    dispatch_async(dispatch_get_main_queue(), {
-                        
-                        guard let data = data, let image = UIImage(data: data) else {
-                            print("Photo not loaded")
-                            return handler(image: nil, error: "Photo not loaded")
-                        }
-                        
-                        return handler(image: image, error: "")
-                    })
-                }
-                task!.resume()
-            }
-        }
-    }
-    
     // Dismiss collection view controller
     func dismissCollectionVC() {
         
@@ -130,25 +111,45 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return photosArray.count < 30 ? photosArray.count : 30
+        return photosArray.count
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         
-        dispatch_async(dispatch_get_main_queue()) { 
-            if let imageData = self.photosArray[indexPath.item].imageData {
-                print("Loading photo from coredata photo image data")
-                cell.photoImageView.image = UIImage(data: imageData)
-            } else {
-                print("Loading new photo from web URL link(s)")
-                self.loadNewPhoto(indexPath) { (image, error) in
+        // Check if saved data exists in coredata
+        if let imageData = self.photosArray[indexPath.item].imageData {
+            print("Loading new photo from coredata")
+            dispatch_async(dispatch_get_main_queue()) {
+                if let image = UIImage(data: imageData) {
                     cell.photoImageView.image = image
+                    // stop animating here
+                    cell.activityIndicatorSpinner.stopAnimating()
+                }
+            }
+        } else {
+            print("Loading new photo from web URL link(s)")
+            // start animating here
+            cell.activityIndicatorSpinner.startAnimating()
+            self.flickrManager.loadNewPhoto(indexPath, photosArray: self.photosArray) { (image, data, error) in
+                guard error == "" else {
+                    print(error)
+                    return
+                }
+                dispatch_async(dispatch_get_main_queue()) {
+                    cell.photoImageView.image = image
+                    // stop animating here
+                    cell.activityIndicatorSpinner.stopAnimating()
+                }
+                self.photosArray[indexPath.item].imageData = data
+                
+                // Save data
+                do { try delegate.stack.saveContext() } catch {
+                    print("Error saving photo data")
                 }
             }
         }
-        
         return cell
     }
 }
