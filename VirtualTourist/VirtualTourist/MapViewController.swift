@@ -175,7 +175,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     // Delegate method for selection of existing annotation
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        
+        print("Got here TEST")
         let annotation = view.annotation
         tappedPin = nil
     
