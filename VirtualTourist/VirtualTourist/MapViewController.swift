@@ -175,13 +175,18 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     // Delegate method for selection of existing annotation
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        print("Got here TEST")
+
         let annotation = view.annotation
         tappedPin = nil
     
         for pin in pins {
             if annotation!.coordinate.latitude == pin.coordinate.latitude && annotation!.coordinate.longitude == pin.coordinate.longitude {
                 tappedPin = pin
+                
+                // Deselect the pin that was tapped most recently
+                mapView.deselectAnnotation(annotation, animated: true)
+                
+                // Check if the map view controller is in edit mode
                 editing ? deletePins(annotation!) : viewPin(tappedPin!)
             }
         }

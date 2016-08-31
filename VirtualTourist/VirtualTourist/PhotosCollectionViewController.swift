@@ -20,6 +20,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
+    
+    var count = 0
 
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -66,6 +68,21 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         photosArray = photosFetchRequest()
     }
     
+    // Collection view cell layout logic (adjusts for portrait vs landscape)
+    func setupCollectionFlowLayout() {
+        let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
+        let space: CGFloat = 3.0
+        let dimension = (view.frame.size.width - ((items + 1) * space)) / items
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumLineSpacing = 8.0 - items
+        layout.minimumInteritemSpacing = space
+        layout.itemSize = CGSizeMake(dimension, dimension)
+        
+        collectionView.collectionViewLayout = layout
+    }
+    
     func photosFetchRequest() -> [Photo] {
         
         let fetchRequest = NSFetchRequest(entityName: "Photo")
@@ -82,21 +99,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         }
     }
 
-    // Collection view cell layout logic (adjusts for portrait vs landscape)
-    func setupCollectionFlowLayout() {
-        let items: CGFloat = view.frame.size.width > view.frame.size.height ? 5.0 : 3.0
-        let space: CGFloat = 3.0
-        let dimension = (view.frame.size.width - ((items + 1) * space)) / items
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = 8.0 - items
-        layout.minimumInteritemSpacing = space
-        layout.itemSize = CGSizeMake(dimension, dimension)
-        
-        collectionView.collectionViewLayout = layout
-    }
-    
     // Dismiss collection view controller
     func dismissCollectionVC() {
         
@@ -118,6 +120,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
         
+        
         // Check if saved data exists in coredata
         if let imageData = self.photosArray[indexPath.item].imageData {
             print("Loading new photo from coredata")
@@ -129,7 +132,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                 }
             }
         } else {
-            print("Loading new photo from web URL link(s)")
+            self.count += 1
+            print("Loading new photo from web URL link(s)... \(count)")
             // start animating here
             cell.activityIndicatorSpinner.startAnimating()
             self.flickrManager.loadNewPhoto(indexPath, photosArray: self.photosArray) { (image, data, error) in

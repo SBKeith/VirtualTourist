@@ -126,7 +126,7 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="x0v-0n-qCU">
                                                     <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                 </imageView>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="DAR-cL-9GC">
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="DAR-cL-9GC">
                                                     <rect key="frame" x="57" y="56" width="37" height="37"/>
                                                 </activityIndicatorView>
                                             </subviews>
@@ -134,8 +134,10 @@
                                         </view>
                                         <constraints>
                                             <constraint firstItem="x0v-0n-qCU" firstAttribute="top" secondItem="U3T-s7-xyk" secondAttribute="top" id="9k2-al-Bum"/>
+                                            <constraint firstItem="DAR-cL-9GC" firstAttribute="centerX" secondItem="U3T-s7-xyk" secondAttribute="centerX" id="G9U-ji-83j"/>
                                             <constraint firstItem="x0v-0n-qCU" firstAttribute="leading" secondItem="U3T-s7-xyk" secondAttribute="leading" id="TfA-bT-HPV"/>
                                             <constraint firstAttribute="bottom" secondItem="x0v-0n-qCU" secondAttribute="bottom" id="XGA-mU-5da"/>
+                                            <constraint firstItem="DAR-cL-9GC" firstAttribute="centerY" secondItem="U3T-s7-xyk" secondAttribute="centerY" id="idh-M5-6R4"/>
                                             <constraint firstAttribute="trailing" secondItem="x0v-0n-qCU" secondAttribute="trailing" id="yoO-WJ-n4B"/>
                                         </constraints>
                                         <size key="customSize" width="150" height="150"/>
