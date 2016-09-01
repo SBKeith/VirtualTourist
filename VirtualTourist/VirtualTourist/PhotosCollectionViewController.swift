@@ -17,6 +17,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // MARK: -Properties
     let flickrManager = FlickrNetworkManager()
     
+    var loading = false
+    
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
@@ -119,7 +121,18 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
+    
+        // Cleanup reused cell
+        dispatch_async(dispatch_get_main_queue()) {
+            cell.photoImageView.image = nil
+            self.flickrManager.cancelTask()
+        }
         
+//        // If data is still loading for the cell, do nothing
+//        if loading {
+//            cell.activityIndicatorSpinner.startAnimating()
+//            
+//        }
         
         // Check if saved data exists in coredata
         if let imageData = self.photosArray[indexPath.item].imageData {
@@ -132,8 +145,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                 }
             }
         } else {
-            self.count += 1
-            print("Loading new photo from web URL link(s)... \(count)")
+            print("Loading new photo from web URL link(s)")
+            loading = true
             // start animating here
             cell.activityIndicatorSpinner.startAnimating()
             self.flickrManager.loadNewPhoto(indexPath, photosArray: self.photosArray) { (image, data, error) in
@@ -143,6 +156,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                 }
                 dispatch_async(dispatch_get_main_queue()) {
                     cell.photoImageView.image = image
+                    self.loading = false
                     // stop animating here
                     cell.activityIndicatorSpinner.stopAnimating()
                 }

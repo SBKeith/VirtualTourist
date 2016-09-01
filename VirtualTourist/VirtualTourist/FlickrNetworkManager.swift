@@ -15,11 +15,11 @@ class FlickrNetworkManager: NetworkManagerCalls {
     // Create singleton instance 
     static let sharedNetworkManager = FlickrNetworkManager()
     
-    let flickrAPI_URL = "https://api.flickr.com/services/rest/"
-    let myAPIKey = "4d0d57db70fdad9b02f3e16eea887f56"
-    
     var task: NSURLSessionTask? = nil
     
+    let flickrAPI_URL = "https://api.flickr.com/services/rest/"
+    let myAPIKey = "4d0d57db70fdad9b02f3e16eea887f56"
+        
     func bboxString(lat: Double, long: Double) -> String {
         
         let BOUNDING_BOX_HALF_WIDTH = 1.0
@@ -80,6 +80,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
     
     // Load photos from URLs
     func loadNewPhoto(indexPath: NSIndexPath, photosArray: [Photo], handler: (image: UIImage?, data: NSData?, error: String) -> Void) {
+
         if photosArray.count > 0 {
             if photosArray[indexPath.item].url != nil {
                 task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
@@ -95,6 +96,14 @@ class FlickrNetworkManager: NetworkManagerCalls {
                 }
                 task!.resume()
             }
+        }
+    }
+    
+    // Stop the current task if data is already loading
+    func cancelTask() {
+        
+        dispatch_async(dispatch_get_main_queue()) { 
+            self.task!.cancel()
         }
     }
 
