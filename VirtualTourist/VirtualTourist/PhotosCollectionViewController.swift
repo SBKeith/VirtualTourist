@@ -17,8 +17,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // MARK: -Properties
     let flickrManager = FlickrNetworkManager()
     
-    var loading = false
-    
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
@@ -28,6 +26,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var newCollectionButton: UIButton!
     
     var fetchedResultsController : NSFetchedResultsController?{
         didSet{
@@ -62,6 +61,8 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         // Setup collection view cell layout
         setupCollectionFlowLayout()
+        
+        collectionView.backgroundColor = UIColor.grayColor()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -125,14 +126,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         // Cleanup reused cell
         dispatch_async(dispatch_get_main_queue()) {
             cell.photoImageView.image = nil
-            self.flickrManager.cancelTask()
         }
-        
-//        // If data is still loading for the cell, do nothing
-//        if loading {
-//            cell.activityIndicatorSpinner.startAnimating()
-//            
-//        }
         
         // Check if saved data exists in coredata
         if let imageData = self.photosArray[indexPath.item].imageData {
@@ -146,7 +140,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             }
         } else {
             print("Loading new photo from web URL link(s)")
-            loading = true
             // start animating here
             cell.activityIndicatorSpinner.startAnimating()
             self.flickrManager.loadNewPhoto(indexPath, photosArray: self.photosArray) { (image, data, error) in
@@ -156,7 +149,6 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                 }
                 dispatch_async(dispatch_get_main_queue()) {
                     cell.photoImageView.image = image
-                    self.loading = false
                     // stop animating here
                     cell.activityIndicatorSpinner.stopAnimating()
                 }
@@ -170,4 +162,17 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         }
         return cell
     }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        newCollectionButton.setTitle("Remove selected images", forState: .Normal)
+    }
+
+    // Rename to 'lowerButton'
+    @IBAction func newCollectionButtontapped(sender: UIButton) {
+        // Set a tag value to prevent interaction with wrong button (new collection / delete photos)
+        
+        collectionView.reloadData()
+    }
+
 }
