@@ -50,7 +50,6 @@ class NetworkManagerCalls {
     
     func getRequest(request: NSMutableURLRequest, handler: (result: AnyObject?, error: String?) -> Void) {
         
-        
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
             // Was there an error?
@@ -83,9 +82,6 @@ class NetworkManagerCalls {
                 handler(result: nil, error: "Connection error")
                 return
             }
-            
-//            print(request)
-            
             handler(result: parsedResult, error: nil)
         }
         task.resume()

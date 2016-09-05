@@ -19,7 +19,11 @@ class FlickrNetworkManager: NetworkManagerCalls {
     
     let flickrAPI_URL = "https://api.flickr.com/services/rest/"
     let myAPIKey = "4d0d57db70fdad9b02f3e16eea887f56"
-        
+    
+    var randomPage: Int {
+        return Int(arc4random_uniform(400) + 1)
+    }
+    
     func bboxString(lat: Double, long: Double) -> String {
         
         let BOUNDING_BOX_HALF_WIDTH = 1.0
@@ -54,7 +58,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
 // MARK: ADD INFO TO COREDATA METHODS
     func addNewPhotos(pin: Pin, handler: (error: String?) -> Void) {
         
-        getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude)) { (photos, error) -> Void in
+        getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude), page: randomPage) { (photos, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
                 
                 var photoTemp: Photo?
@@ -98,18 +102,10 @@ class FlickrNetworkManager: NetworkManagerCalls {
             }
         }
     }
-    
-    // Stop the current task if data is already loading
-    func cancelTask() {
-        
-        dispatch_async(dispatch_get_main_queue()) { 
-            self.task!.cancel()
-        }
-    }
 
     // Get photo data from touch coordinates
-    func getPhotosUsingCoordinates(lat: Double, long: Double, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
-        
+    func getPhotosUsingCoordinates(lat: Double, long: Double, page: Int = 1, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
+                
         let params = [
             "method": "flickr.photos.search",
             "api_key": myAPIKey,
@@ -119,6 +115,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
             "format": "json",
             "nojsoncallback": "1",
             "per_page": "21",
+            "page": String(page)
         ]
         
         let request = setupRequest("\(flickrAPI_URL)", params: params)

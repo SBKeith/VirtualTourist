@@ -16,33 +16,16 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     // MARK: -Properties
     let flickrManager = FlickrNetworkManager()
+    let fetchRequest = NSFetchRequest(entityName: "Photo")
     
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
     
-    var count = 0
-
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var newCollectionButton: UIButton!
-    
-    var fetchedResultsController : NSFetchedResultsController?{
-        didSet{
-            fetchedResultsController?.delegate = self
-        }
-    }
-    
-//    // Initializers
-    init(fetchedResultsController fc : NSFetchedResultsController) {
-        fetchedResultsController = fc
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
+    @IBOutlet weak var lowerButton: UIButton!
     
     // MARK: - Loading methods
     override func viewDidLoad() {
@@ -63,11 +46,14 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         setupCollectionFlowLayout()
         
         collectionView.backgroundColor = UIColor.grayColor()
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-  
+        
         photosArray = photosFetchRequest()
     }
     
@@ -88,12 +74,9 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     
     func photosFetchRequest() -> [Photo] {
         
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        print("Fetching Photos...")
         
-        // Get the saved pins
+        // Get the saved Photos
         do {
             return try context.executeFetchRequest(fetchRequest) as! [Photo]
         } catch {
@@ -120,7 +103,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-
+        
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
     
         // Cleanup reused cell
@@ -165,14 +148,42 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        newCollectionButton.setTitle("Remove selected images", forState: .Normal)
+        lowerButton.setTitle("Remove selected images", forState: .Normal)
+    }
+    
+    // HERE ----------
+    func deletePhotos() {
+        
+        print("Deleting photos imageData...")
+
+        for i in 0...photosArray.count - 1 {
+            photosArray[i].imageData = nil
+        }
+        
+        // Add photos to new pin
+        FlickrNetworkManager.sharedNetworkManager.addNewPhotos(pin!, handler: { _ in do {
+            try delegate.stack.saveContext()}
+        catch {
+            print("Error downloading initial photos.")
+            }
+        })
+        
+        // Save data
+        do { try delegate.stack.saveContext() } catch {
+            print("Error saving photo data")
+        }
     }
 
     // Rename to 'lowerButton'
-    @IBAction func newCollectionButtontapped(sender: UIButton) {
+    @IBAction func lowerButtontapped(sender: UIButton) {
         // Set a tag value to prevent interaction with wrong button (new collection / delete photos)
+//        print(photosArray)
+        deletePhotos()
         
-        collectionView.reloadData()
+        dispatch_async(dispatch_get_main_queue()) {
+            self.photosArray = self.photosFetchRequest()
+            self.collectionView.reloadData()
+            print(self.photosArray.count)
+        }
     }
-
 }
