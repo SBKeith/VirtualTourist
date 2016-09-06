@@ -156,34 +156,51 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         print("Deleting photos imageData...")
 
-        for i in 0...photosArray.count - 1 {
-            photosArray[i].imageData = nil
-        }
+        let request = NSFetchRequest(entityName: "Photo")
         
-        // Add photos to new pin
-        FlickrNetworkManager.sharedNetworkManager.addNewPhotos(pin!, handler: { _ in do {
-            try delegate.stack.saveContext()}
-        catch {
-            print("Error downloading initial photos.")
+        request.predicate = NSPredicate(format: "pin == %@", self.pin!)
+        
+        do {
+            let photos = try context.executeFetchRequest(request) as! [Photo]
+            for photo in photos {
+                context.deleteObject(photo)
             }
-        })
+        } catch {}
         
-        // Save data
+        photosArray.removeAll()
+    
         do { try delegate.stack.saveContext() } catch {
-            print("Error saving photo data")
+            print("Error saving deletion")
         }
     }
 
     // Rename to 'lowerButton'
     @IBAction func lowerButtontapped(sender: UIButton) {
+        
+        var photoTemp: Photo?
+
         // Set a tag value to prevent interaction with wrong button (new collection / delete photos)
-//        print(photosArray)
         deletePhotos()
         
-        dispatch_async(dispatch_get_main_queue()) {
-            self.photosArray = self.photosFetchRequest()
-            self.collectionView.reloadData()
-            print(self.photosArray.count)
+        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(pin!.lat, long: pin!.long, page: FlickrNetworkManager.sharedNetworkManager.randomPage) { (photos, error) in
+
+            dispatch_async(dispatch_get_main_queue()) {
+                
+                for photo in photos! {
+                    if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
+                        photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                        photoTemp?.url = photo["url_m"] as? String
+                        photoTemp?.pin = self.pin!
+                    }
+                }
+                do { try delegate.stack.saveContext() } catch {
+                    print("Error saving deletion")
+                }
+                
+                print("RELOADING DATA...")
+                self.photosArray = self.photosFetchRequest()
+                self.collectionView.reloadData()
+            }
         }
     }
 }

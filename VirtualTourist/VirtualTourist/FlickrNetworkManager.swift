@@ -21,7 +21,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
     let myAPIKey = "4d0d57db70fdad9b02f3e16eea887f56"
     
     var randomPage: Int {
-        return Int(arc4random_uniform(400) + 1)
+        return Int(arc4random_uniform(50) + 1)
     }
     
     func bboxString(lat: Double, long: Double) -> String {
@@ -58,7 +58,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
 // MARK: ADD INFO TO COREDATA METHODS
     func addNewPhotos(pin: Pin, handler: (error: String?) -> Void) {
         
-        getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude), page: randomPage) { (photos, error) -> Void in
+        getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude)) { (photos, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
                 
                 var photoTemp: Photo?
@@ -105,7 +105,10 @@ class FlickrNetworkManager: NetworkManagerCalls {
 
     // Get photo data from touch coordinates
     func getPhotosUsingCoordinates(lat: Double, long: Double, page: Int = 1, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
-                
+        
+        print(page)
+        
+        
         let params = [
             "method": "flickr.photos.search",
             "api_key": myAPIKey,
