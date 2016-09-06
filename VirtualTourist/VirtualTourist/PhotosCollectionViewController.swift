@@ -21,6 +21,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
+    var indexToRemove = [NSIndexPath]()
     
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -148,11 +149,53 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        lowerButton.setTitle("Remove selected images", forState: .Normal)
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+        
+        if indexToRemove.contains(indexPath) {
+            indexToRemove.removeAtIndex(indexToRemove.indexOf(indexPath)!)
+            cell.alpha = 1.0
+            if indexToRemove.count == 0 {
+                lowerButton.setTitle("New Collection", forState: .Normal)
+                lowerButton.tag = 0
+            }
+        } else {
+            if indexToRemove.count == 0 {
+                lowerButton.setTitle("Remove selected images", forState: .Normal)
+                lowerButton.tag = 1
+            }
+            indexToRemove.append(indexPath)
+            
+            cell.alpha = 0.5
+        }
     }
     
-    // HERE ----------
-    func deletePhotos() {
+    func deleteSelectedPhotos() {
+        
+        var photosToDelete = [Photo]()
+        
+        let request = NSFetchRequest(entityName: "Photo")
+        request.predicate = NSPredicate(format: "pin == %@", self.pin!)
+        
+        do {
+            var photos = try context.executeFetchRequest(request) as! [Photo]
+            for indexPath in indexToRemove {
+                let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+                photosToDelete.append(photos.removeAtIndex(indexPath.item))
+                cell.photoImageView.image = nil
+                photosArray[indexPath.item].imageData = nil
+            }
+            for photos in photosToDelete {
+                context.deleteObject(photos)
+            }
+        } catch {}
+        
+        do { try delegate.stack.saveContext() } catch {
+            print("Error saving deleted photos")
+        }
+    }
+    
+    // Delete All photos in coredata (via selected pin)
+    func deleteAllPhotos() {
         
         print("Deleting photos imageData...")
 
@@ -165,7 +208,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             for photo in photos {
                 context.deleteObject(photo)
             }
-        } catch {}
+        } catch { print("Error deleting photo") }
         
         photosArray.removeAll()
     
@@ -177,30 +220,36 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // Rename to 'lowerButton'
     @IBAction func lowerButtontapped(sender: UIButton) {
         
-        var photoTemp: Photo?
-
-        // Set a tag value to prevent interaction with wrong button (new collection / delete photos)
-        deletePhotos()
-        
-        FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(pin!.lat, long: pin!.long, page: FlickrNetworkManager.sharedNetworkManager.randomPage) { (photos, error) in
-
-            dispatch_async(dispatch_get_main_queue()) {
+        switch (sender.tag) {
+        case 0:
+            var photoTemp: Photo?
+            
+            deleteAllPhotos()
+            
+            FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(pin!.lat, long: pin!.long, page: FlickrNetworkManager.sharedNetworkManager.randomPage) { (photos, error) in
                 
-                for photo in photos! {
-                    if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-                        photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
-                        photoTemp?.url = photo["url_m"] as? String
-                        photoTemp?.pin = self.pin!
+                dispatch_async(dispatch_get_main_queue()) {
+                    
+                    for photo in photos! {
+                        if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
+                            photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                            photoTemp?.url = photo["url_m"] as? String
+                            photoTemp?.pin = self.pin!
+                        }
                     }
+                    do { try delegate.stack.saveContext() } catch {
+                        print("Error saving deletion")
+                    }
+                    
+                    print("RELOADING DATA...")
+                    self.photosArray = self.photosFetchRequest()
+                    self.collectionView.reloadData()
                 }
-                do { try delegate.stack.saveContext() } catch {
-                    print("Error saving deletion")
-                }
-                
-                print("RELOADING DATA...")
-                self.photosArray = self.photosFetchRequest()
-                self.collectionView.reloadData()
             }
+        case 1:
+            deleteSelectedPhotos()
+            
+        default: break
         }
     }
 }
