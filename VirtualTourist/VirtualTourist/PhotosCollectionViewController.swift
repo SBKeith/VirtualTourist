@@ -173,14 +173,23 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         var photosToDelete = [Photo]()
         
+        print(indexToRemove.count)
+        
         let request = NSFetchRequest(entityName: "Photo")
         request.predicate = NSPredicate(format: "pin == %@", self.pin!)
         
         do {
             var photos = try context.executeFetchRequest(request) as! [Photo]
             for indexPath in indexToRemove {
+                
+                print("IndexPath: ", indexPath.item)
+                print("Photos: ", photos.count)
+                
                 let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
                 photosToDelete.append(photos.removeAtIndex(indexPath.item))
+                
+                print("Photos to delete: ", photosToDelete)
+                
                 cell.photoImageView.image = nil
                 photosArray[indexPath.item].imageData = nil
             }
@@ -240,15 +249,20 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                     do { try delegate.stack.saveContext() } catch {
                         print("Error saving deletion")
                     }
-                    
                     print("RELOADING DATA...")
                     self.photosArray = self.photosFetchRequest()
                     self.collectionView.reloadData()
                 }
             }
         case 1:
-            deleteSelectedPhotos()
-            
+            dispatch_async(dispatch_get_main_queue(), { 
+                self.deleteSelectedPhotos()
+                self.photosArray = self.photosFetchRequest()
+                self.collectionView.deleteItemsAtIndexPaths(self.indexToRemove)
+                self.indexToRemove.removeAll()
+                self.lowerButton.setTitle("New Collection", forState: .Normal)
+                self.lowerButton.tag = 0
+            })
         default: break
         }
     }
