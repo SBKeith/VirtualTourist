@@ -62,6 +62,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4708EB431D831C5D001E0776 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				D8A29CF21D5F33460086D92B /* NetworkManagerCalls.swift */,
+				D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */,
+			);
+			name = Networking;
+			sourceTree = "<group>";
+		};
 		472DCFBB1D271D31000D8E7A = {
 			isa = PBXGroup;
 			children = (
@@ -113,14 +122,13 @@
 		47BC68D71D2D8AE300410D7C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4708EB431D831C5D001E0776 /* Networking */,
 				47BC68D91D2DB9DA00410D7C /* Model.xcdatamodeld */,
 				47585E151D2ED485007B568B /* CoreDataStack.swift */,
-				D8A29CF21D5F33460086D92B /* NetworkManagerCalls.swift */,
-				D81035D31D59DC32003C9B56 /* FlickrNetworkManager.swift */,
 				D8C0A08C1D6306A700B918DA /* Constants.swift */,
 				47585E171D2ED55B007B568B /* Pin+CoreDataProperties.swift */,
-				47585E181D2ED55B007B568B /* Pin.swift */,
 				D806CBD61D6ECB27008658A4 /* Photo+CoreDataProperties.swift */,
+				47585E181D2ED55B007B568B /* Pin.swift */,
 				D806CBD71D6ECB27008658A4 /* Photo.swift */,
 			);
 			name = Model;

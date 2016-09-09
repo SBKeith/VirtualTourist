@@ -122,7 +122,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         }
     }
     
-    // Function changes controller state
+    // Function changes view controller state
     override func setEditing(editing: Bool, animated: Bool) {
         
         super.setEditing(editing, animated: false)
