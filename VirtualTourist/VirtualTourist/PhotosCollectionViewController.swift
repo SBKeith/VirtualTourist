@@ -182,16 +182,17 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             var photos = try context.executeFetchRequest(request) as! [Photo]
             for indexPath in indexToRemove {
                 
-                print("IndexPath: ", indexPath.item)
+                print("IndexPath: ", indexPath.row)
                 print("Photos: ", photos.count)
                 
                 let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
-                photosToDelete.append(photos.removeAtIndex(indexPath.item))
+                photosToDelete.append(photos.removeAtIndex(indexPath.row))
                 
                 print("Photos to delete: ", photosToDelete)
                 
                 cell.photoImageView.image = nil
-                photosArray[indexPath.item].imageData = nil
+                
+                photosArray.removeAtIndex(indexPath.row)
             }
             for photos in photosToDelete {
                 context.deleteObject(photos)
