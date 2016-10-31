@@ -16,12 +16,12 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
 
     // MARK: -Properties
     let flickrManager = FlickrNetworkManager()
-    let fetchRequest = NSFetchRequest(entityName: "Photo")
+    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
     
     // Set variables
     var pin: Pin? = nil
     var photosArray = [Photo]()
-    var indexToRemove = [NSIndexPath]()
+    var indexToRemove = [IndexPath]()
     
     // Outlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -33,7 +33,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         super.viewDidLoad()
         
         // Set left bar button item properties
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "OK", style: .Plain, target: self, action: #selector(dismissCollectionVC))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "OK", style: .plain, target: self, action: #selector(dismissCollectionVC))
         
         // Set pin from selected annotation; adjust map positioning
         mapView.addAnnotation(pin!)
@@ -46,13 +46,13 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         // Setup collection view cell layout
         setupCollectionFlowLayout()
         
-        collectionView.backgroundColor = UIColor.grayColor()
+        collectionView.backgroundColor = UIColor.gray
         
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         photosArray = photosFetchRequest()
@@ -68,7 +68,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.minimumLineSpacing = 8.0 - items
         layout.minimumInteritemSpacing = space
-        layout.itemSize = CGSizeMake(dimension, dimension)
+        layout.itemSize = CGSize(width: dimension, height: dimension)
         
         collectionView.collectionViewLayout = layout
     }
@@ -79,7 +79,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         // Get the saved Photos
         do {
-            return try context.executeFetchRequest(fetchRequest) as! [Photo]
+            return try context.fetch(fetchRequest) as! [Photo]
         } catch {
             print("There was an error fetching the list of pins.")
             return [Photo]()
@@ -89,34 +89,34 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     // Dismiss collection view controller
     func dismissCollectionVC() {
         
-        navigationController?.popViewControllerAnimated(true)
+        navigationController?.popViewController(animated: true)
     }
     
     // MARK: UICollectionViewDataSource
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
 
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return photosArray.count
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PhotoCollectionViewCell
     
         // Cleanup reused cell
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             cell.photoImageView.image = nil
         }
         
         // Check if saved data exists in coredata
         if let imageData = self.photosArray[indexPath.item].imageData {
             print("Loading new photo from coredata")
-            dispatch_async(dispatch_get_main_queue()) {
-                if let image = UIImage(data: imageData) {
+            DispatchQueue.main.async {
+                if let image = UIImage(data: imageData as Data) {
                     cell.photoImageView.image = image
                     // stop animating here
                     cell.activityIndicatorSpinner.stopAnimating()
@@ -131,7 +131,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                     print(error)
                     return
                 }
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     cell.photoImageView.image = image
                     // stop animating here
                     cell.activityIndicatorSpinner.stopAnimating()
@@ -147,20 +147,20 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+        let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
         
         if indexToRemove.contains(indexPath) {
-            indexToRemove.removeAtIndex(indexToRemove.indexOf(indexPath)!)
+            indexToRemove.remove(at: indexToRemove.index(of: indexPath)!)
             cell.alpha = 1.0
             if indexToRemove.count == 0 {
-                lowerButton.setTitle("New Collection", forState: .Normal)
+                lowerButton.setTitle("New Collection", for: UIControlState())
                 lowerButton.tag = 0
             }
         } else {
             if indexToRemove.count == 0 {
-                lowerButton.setTitle("Remove selected images", forState: .Normal)
+                lowerButton.setTitle("Remove selected images", for: UIControlState())
                 lowerButton.tag = 1
             }
             indexToRemove.append(indexPath)
@@ -175,27 +175,27 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         print(indexToRemove.count)
         
-        let request = NSFetchRequest(entityName: "Photo")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         request.predicate = NSPredicate(format: "pin == %@", self.pin!)
         
         do {
-            var photos = try context.executeFetchRequest(request) as! [Photo]
+            var photos = try context.fetch(request) as! [Photo]
             for indexPath in indexToRemove {
                 
                 print("IndexPath: ", indexPath.row)
                 print("Photos: ", photos.count)
                 
-                let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
-                photosToDelete.append(photos.removeAtIndex(indexPath.row))
+                let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
+                photosToDelete.append(photos.remove(at: indexPath.row))
                 
                 print("Photos to delete: ", photosToDelete)
                 
                 cell.photoImageView.image = nil
                 
-                photosArray.removeAtIndex(indexPath.row)
+                photosArray.remove(at: indexPath.row)
             }
             for photos in photosToDelete {
-                context.deleteObject(photos)
+                context.delete(photos)
             }
         } catch {}
         
@@ -209,14 +209,14 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
         
         print("Deleting photos imageData...")
 
-        let request = NSFetchRequest(entityName: "Photo")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         
         request.predicate = NSPredicate(format: "pin == %@", self.pin!)
         
         do {
-            let photos = try context.executeFetchRequest(request) as! [Photo]
+            let photos = try context.fetch(request) as! [Photo]
             for photo in photos {
-                context.deleteObject(photo)
+                context.delete(photo)
             }
         } catch { print("Error deleting photo") }
         
@@ -228,7 +228,7 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
     }
 
     // Rename to 'lowerButton'
-    @IBAction func lowerButtontapped(sender: UIButton) {
+    @IBAction func lowerButtontapped(_ sender: UIButton) {
         
         switch (sender.tag) {
         case 0:
@@ -238,11 +238,11 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
             
             FlickrNetworkManager.sharedNetworkManager.getPhotosUsingCoordinates(pin!.lat, long: pin!.long, page: FlickrNetworkManager.sharedNetworkManager.randomPage) { (photos, error) in
                 
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     
                     for photo in photos! {
-                        if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-                            photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                        if let entity = NSEntityDescription.entity(forEntityName: "Photo", in: context) {
+                            photoTemp = Photo(entity: entity, insertInto: context)
                             photoTemp?.url = photo["url_m"] as? String
                             photoTemp?.pin = self.pin!
                         }
@@ -256,12 +256,12 @@ class PhotosCollectionViewController: UIViewController, UICollectionViewDelegate
                 }
             }
         case 1:
-            dispatch_async(dispatch_get_main_queue(), { 
+            DispatchQueue.main.async(execute: { 
                 self.deleteSelectedPhotos()
                 self.photosArray = self.photosFetchRequest()
-                self.collectionView.deleteItemsAtIndexPaths(self.indexToRemove)
+                self.collectionView.deleteItems(at: self.indexToRemove)
                 self.indexToRemove.removeAll()
-                self.lowerButton.setTitle("New Collection", forState: .Normal)
+                self.lowerButton.setTitle("New Collection", for: UIControlState())
                 self.lowerButton.tag = 0
             })
         default: break

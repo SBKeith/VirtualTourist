@@ -15,7 +15,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
     // Create singleton instance 
     static let sharedNetworkManager = FlickrNetworkManager()
     
-    var task: NSURLSessionTask? = nil
+    var task: URLSessionTask? = nil
     
     let flickrAPI_URL = "https://api.flickr.com/services/rest/"
     let myAPIKey = "4d0d57db70fdad9b02f3e16eea887f56"
@@ -24,7 +24,7 @@ class FlickrNetworkManager: NetworkManagerCalls {
         return Int(arc4random_uniform(50) + 1)
     }
     
-    func bboxString(lat: Double, long: Double) -> String {
+    func bboxString(_ lat: Double, long: Double) -> String {
         
         // ensure bbox is bounded by minimum and maximums
         let BOUNDING_BOX_HALF_WIDTH = 1.0, BOUNDING_BOX_HALF_HEIGHT = 1.0
@@ -41,10 +41,10 @@ class FlickrNetworkManager: NetworkManagerCalls {
     }
     
 // MARK: ADD INFO TO COREDATA METHODS
-    func addNewPhotos(pin: Pin, handler: (error: String?) -> Void) {
+    func addNewPhotos(_ pin: Pin, handler: @escaping (_ error: String?) -> Void) {
         
         getPhotosUsingCoordinates((pin.coordinate.latitude), long: (pin.coordinate.longitude)) { (photos, error) -> Void in
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 
                 var photoTemp: Photo?
                 
@@ -53,14 +53,14 @@ class FlickrNetworkManager: NetworkManagerCalls {
                 // Add web URLs and Pin(s) only at this point...
                 if photoTemp == nil {
                     for photo in photos! {
-                        if let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-                            photoTemp = Photo(entity: entity, insertIntoManagedObjectContext: context)
+                        if let entity = NSEntityDescription.entity(forEntityName: "Photo", in: context) {
+                            photoTemp = Photo(entity: entity, insertInto: context)
                             photoTemp?.url = photo["url_m"] as? String
                             photoTemp?.pin = pin
                         }
                     }
                 }
-                return handler(error: nil)
+                return handler(nil)
             })
         }
     }
@@ -68,28 +68,28 @@ class FlickrNetworkManager: NetworkManagerCalls {
 // MARK: LOAD PHOTOS THAT ARE NOT SAVED IN COREDATA
     
     // Load photos from URLs
-    func loadNewPhoto(indexPath: NSIndexPath, photosArray: [Photo], handler: (image: UIImage?, data: NSData?, error: String) -> Void) {
+    func loadNewPhoto(_ indexPath: IndexPath, photosArray: [Photo], handler: @escaping (_ image: UIImage?, _ data: Data?, _ error: String) -> Void) {
 
         if photosArray.count > 0 {
             if photosArray[indexPath.item].url != nil {
-                task = NSURLSession.sharedSession().dataTaskWithRequest(NSURLRequest(URL: NSURL(string: photosArray[indexPath.item].url!)!)) { data, response, downloadError in
-                    dispatch_async(dispatch_get_main_queue(), {
+                task = URLSession.shared.dataTask(with: URLRequest(url: URL(string: photosArray[indexPath.item].url!)!), completionHandler: { data, response, downloadError in
+                    DispatchQueue.main.async(execute: {
                         
                         guard let data = data, let image = UIImage(data: data) else {
                             print("Photo not loaded")
-                            return handler(image: nil, data: nil, error: "Photo not loaded")
+                            return handler(nil, nil, "Photo not loaded")
                         }
                         
-                        return handler(image: image, data: data, error: "")
+                        return handler(image, data, "")
                     })
-                }
+                }) 
                 task!.resume()
             }
         }
     }
 
     // Get photo data from touch coordinates
-    func getPhotosUsingCoordinates(lat: Double, long: Double, page: Int = 1, handler: (photos: [[String : AnyObject]]?, error: String?) -> Void) {
+    func getPhotosUsingCoordinates(_ lat: Double, long: Double, page: Int = 1, handler: @escaping (_ photos: [[String : AnyObject]]?, _ error: String?) -> Void) {
         
         print(page)
         
@@ -106,24 +106,24 @@ class FlickrNetworkManager: NetworkManagerCalls {
             "page": String(page)
         ]
         
-        let request = setupRequest("\(flickrAPI_URL)", params: params)
+        let request = setupRequest("\(flickrAPI_URL)", params: params as [String : AnyObject])
         
         getRequest(request) { (result, error) -> Void in
             guard error == nil else {
-                handler(photos: nil, error: error)
+                handler(nil, error)
                 return
             }
             guard let data = result!["photos"] as? [String : AnyObject] else {
                 print("No photos were found!")
-                handler(photos: nil, error: "Data capture error")
+                handler(nil, "Data capture error")
                 return
             }
             guard let photos = data["photo"] as? [[String: AnyObject]] else {
                 print("No photos were found!")
-                handler(photos: nil, error: "Data capture eror")
+                handler(nil, "Data capture eror")
                 return
             }
-            handler(photos: photos, error: nil)
+            handler(photos, nil)
         }
     }
 }

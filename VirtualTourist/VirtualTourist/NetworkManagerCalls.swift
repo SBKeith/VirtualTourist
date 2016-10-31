@@ -11,8 +11,8 @@ import Foundation
 class NetworkManagerCalls {
     
     // Session
-    var session: NSURLSession {
-        return NSURLSession.sharedSession()
+    var session: URLSession {
+        return URLSession.shared
     }
     
     // Flickr request methods
@@ -24,23 +24,23 @@ class NetworkManagerCalls {
     }
     
     // Encoded query string
-    class func encodeParameters(params: [String: AnyObject]) -> String {
-        let components = NSURLComponents()
-        components.queryItems = params.map { NSURLQueryItem(name: $0, value: String($1)) }
+    class func encodeParameters(_ params: [String: AnyObject]) -> String {
+        var components = URLComponents()
+        components.queryItems = params.map { URLQueryItem(name: $0, value: String(describing: $1)) }
         
         return components.percentEncodedQuery ?? ""
     }
     
     // Setup NSMutable Request
-    func setupRequest(url: String, method: Method = .Get, params: [String: AnyObject] = [String: AnyObject](), body: AnyObject? = nil) -> NSMutableURLRequest {
+    func setupRequest(_ url: String, method: Method = .Get, params: [String: AnyObject] = [String: AnyObject](), body: AnyObject? = nil) -> NSMutableURLRequest {
         
         let url = url + "?" + NetworkManagerCalls.encodeParameters(params)
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-        request.HTTPMethod = method.rawValue.uppercaseString
+        let request = NSMutableURLRequest(url: URL(string: url)!)
+        request.httpMethod = method.rawValue.uppercased()
         
         if body != nil {
             do {
-                request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(body!, options: [])
+                request.httpBody = try! JSONSerialization.data(withJSONObject: body!, options: [])
             }
         }
         return request
@@ -48,42 +48,42 @@ class NetworkManagerCalls {
     
     // Send request and parse result
     
-    func getRequest(request: NSMutableURLRequest, handler: (result: AnyObject?, error: String?) -> Void) {
+    func getRequest(_ request: NSMutableURLRequest, handler: @escaping (_ result: AnyObject?, _ error: String?) -> Void) {
         
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let task = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) in
             
             // Was there an error?
             guard error == nil else {
                 print("There was an error with your request: \(error)")
-                handler(result: nil, error: "Connection error")
+                handler(nil, "Connection error")
                 return
             }
             
             // GUARD: Did we get a successful 2XX response?
-            guard let status = (response as? NSHTTPURLResponse)?.statusCode where status != 403 else {
+            guard let status = (response as? HTTPURLResponse)?.statusCode, status != 403 else {
                 print("Bad status code (403)")
-                handler(result: nil, error: "Login information incorrect")
+                handler(nil, "Login information incorrect")
                 return
             }
             
             // Any data returned?
             guard let data = data else {
                 print("No data was returned by the request!")
-                handler(result: nil, error: "Connection error")
+                handler(nil, "Connection error")
                 return
             }
             
             // parse the data
-            let parsedResult: AnyObject!
+            let parsedResult: AnyObject
             do {
-                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
             } catch {
                 print("Could not parse the data as JSON: '\(data)'")
-                handler(result: nil, error: "Connection error")
+                handler(nil, "Connection error")
                 return
             }
-            handler(result: parsedResult, error: nil)
-        }
+            handler(parsedResult, nil)
+        }) 
         task.resume()
     }
 }

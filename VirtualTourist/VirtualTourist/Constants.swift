@@ -9,5 +9,5 @@
 import Foundation
 import UIKit
 
-let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-let context = (UIApplication.sharedApplication().delegate as! AppDelegate).stack.context
+let delegate = UIApplication.shared.delegate as! AppDelegate
+let context = (UIApplication.shared.delegate as! AppDelegate).stack.context

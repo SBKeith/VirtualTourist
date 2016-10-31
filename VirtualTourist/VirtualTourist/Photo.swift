@@ -13,8 +13,8 @@ import CoreData
 class Photo: NSManagedObject {
 
     convenience init(id: String, url: String, context: NSManagedObjectContext) {
-        if let ent = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context) {
-            self.init(entity: ent, insertIntoManagedObjectContext: context)
+        if let ent = NSEntityDescription.entity(forEntityName: "Photo", in: context) {
+            self.init(entity: ent, insertInto: context)
             
             self.id = id
             self.url = url
